@@ -68,41 +68,45 @@ export const getNowPlaying = async () => {
 
   console.log(access);
 
-  const currentlyPlayingRes = await fetch(NOW_PLAYING_ENDPOINT, {
-    headers: {
-      Authorization: `Bearer ${access_token}`
-    }
-  });
-
-  if (currentlyPlayingRes.status === 204 || currentlyPlayingRes.status > 400) {
-    // fallback to recently played
-    const recentRes = await fetch(RECENTLY_PLAYED_ENDPOINT, {
+  try {
+    const currentlyPlayingRes = await fetch(NOW_PLAYING_ENDPOINT, {
       headers: {
         Authorization: `Bearer ${access_token}`
       }
     });
 
-    const recentData: RecentlyPlayedResponse = await recentRes.json();
-    const song = recentData.items[0].track;
+    if (currentlyPlayingRes.status === 204 || currentlyPlayingRes.status > 400) {
+      // fallback to recently played
+      const recentRes = await fetch(RECENTLY_PLAYED_ENDPOINT, {
+        headers: {
+          Authorization: `Bearer ${access_token}`
+        }
+      });
+
+      const recentData: RecentlyPlayedResponse = await recentRes.json();
+      const song = recentData.items[0].track;
+
+      return {
+        isPlaying: false,
+        title: song.name,
+        artist: song.artists.map(artist => artist.name).join(', '),
+        album: song.album.name,
+        albumImageUrl: song.album.images[0].url,
+        songUrl: song.external_urls.spotify
+      };
+    }
+
+    const song: CurrentlyPlayingResponse = await currentlyPlayingRes.json();
 
     return {
-      isPlaying: false,
-      title: song.name,
-      artist: song.artists.map(artist => artist.name).join(', '),
-      album: song.album.name,
-      albumImageUrl: song.album.images[0].url,
-      songUrl: song.external_urls.spotify
+      isPlaying: song.is_playing,
+      title: song.item.name,
+      artist: song.item.artists.map(artist => artist.name).join(', '),
+      album: song.item.album.name,
+      albumImageUrl: song.item.album.images[0].url,
+      songUrl: song.item.external_urls.spotify
     };
+  } catch (err: unknown) {
+    return access;
   }
-
-  const song: CurrentlyPlayingResponse = await currentlyPlayingRes.json();
-
-  return {
-    isPlaying: song.is_playing,
-    title: song.item.name,
-    artist: song.item.artists.map(artist => artist.name).join(', '),
-    album: song.item.album.name,
-    albumImageUrl: song.item.album.images[0].url,
-    songUrl: song.item.external_urls.spotify
-  };
 };
