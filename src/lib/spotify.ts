@@ -62,7 +62,11 @@ export const getAccessToken = async () => {
 };
 
 export const getNowPlaying = async () => {
-  const { access_token } = await getAccessToken();
+  const access = await getAccessToken();
+
+  const access_token = access.access_token;
+
+  console.log(access);
 
   const currentlyPlayingRes = await fetch(NOW_PLAYING_ENDPOINT, {
     headers: {
