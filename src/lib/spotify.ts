@@ -10,6 +10,40 @@ const TOKEN_ENDPOINT = 'https://accounts.spotify.com/api/token';
 const NOW_PLAYING_ENDPOINT = 'https://api.spotify.com/v1/me/player/currently-playing';
 const RECENTLY_PLAYED_ENDPOINT = 'https://api.spotify.com/v1/me/player/recently-played?limit=1';
 
+interface Artist {
+  name: string;
+}
+
+interface AlbumImage {
+  url: string;
+}
+
+interface Album {
+  name: string;
+  images: AlbumImage[];
+}
+
+interface Track {
+  name: string;
+  artists: Artist[];
+  album: Album;
+  external_urls: { spotify: string };
+}
+
+interface CurrentlyPlayingResponse {
+  is_playing: boolean;
+  item: Track;
+}
+
+interface RecentlyPlayedItem {
+  track: Track;
+}
+
+interface RecentlyPlayedResponse {
+  items: RecentlyPlayedItem[];
+}
+
+
 
 export const getAccessToken = async () => {
   const res = await fetch(TOKEN_ENDPOINT, {
@@ -28,10 +62,7 @@ export const getAccessToken = async () => {
 };
 
 export const getNowPlaying = async () => {
-  const access = await getAccessToken();
-  const access_token = access.access_token;
-
-  console.log(access);
+  const { access_token } = await getAccessToken();
 
   const currentlyPlayingRes = await fetch(NOW_PLAYING_ENDPOINT, {
     headers: {
@@ -39,47 +70,33 @@ export const getNowPlaying = async () => {
     }
   });
 
-  // If nothing is playing or error occurs, fallback to recently played
   if (currentlyPlayingRes.status === 204 || currentlyPlayingRes.status > 400) {
+    // fallback to recently played
     const recentRes = await fetch(RECENTLY_PLAYED_ENDPOINT, {
       headers: {
         Authorization: `Bearer ${access_token}`
       }
     });
 
-    const recentData = await recentRes.json();
-
-    console.log(recentData);
-
-    if (!recentData?.items || recentData.items.length === 0) {
-      return {
-        isPlaying: false,
-        title: 'No recent track found',
-        artist: '',
-        album: '',
-        albumImageUrl: '',
-        songUrl: ''
-      };
-    }
-
+    const recentData: RecentlyPlayedResponse = await recentRes.json();
     const song = recentData.items[0].track;
 
     return {
       isPlaying: false,
       title: song.name,
-      artist: song.artists.map((artist: any) => artist.name).join(', '),
+      artist: song.artists.map(artist => artist.name).join(', '),
       album: song.album.name,
       albumImageUrl: song.album.images[0].url,
       songUrl: song.external_urls.spotify
     };
   }
 
-  const song = await currentlyPlayingRes.json();
+  const song: CurrentlyPlayingResponse = await currentlyPlayingRes.json();
 
   return {
     isPlaying: song.is_playing,
     title: song.item.name,
-    artist: song.item.artists.map((artist: any) => artist.name).join(', '),
+    artist: song.item.artists.map(artist => artist.name).join(', '),
     album: song.item.album.name,
     albumImageUrl: song.item.album.images[0].url,
     songUrl: song.item.external_urls.spotify

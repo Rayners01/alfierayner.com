@@ -17,7 +17,7 @@ export default function Home() {return (
             <div>
               <p className="text-green-500">welcome</p>
               <p>
-                Hi, I'm <strong>Alfie Rayner</strong>, a Computer Science student at the University of Warwick.
+                Hi, I&lsquo;m <strong>Alfie Rayner</strong>, a Computer Science student at the University of Warwick.
               </p>
             </div>
             <div className="flex flex-row gap-4 w-full h-10">
@@ -52,7 +52,7 @@ export default function Home() {return (
         
         <Card className="col-span-3 row-span-6 text-sm">
           <h1 className="text-xl font-semibold">About me</h1>
-          <p>I'm a software developer from Brighton, England.</p>
+          <p>I&lsquo;m a software developer from Brighton, England.</p>
           <br></br>
           <p>Currently, I am in my second-year of my MEng Computer Science degree at the University of Warwick.</p>
           <br></br>
@@ -66,7 +66,7 @@ export default function Home() {return (
           <br></br>
           <p>I primarily code in Java and JavaScript, however I also have experience using Python, C and C#.</p>
           <br></br>
-          <p>Beyond programming, I'm passionate about music, travelling, photography, playing the piano and football.</p>
+          <p>Beyond programming, I&lsquo;m passionate about music, travelling, photography, playing the piano and football.</p>
         </Card>
         
         <Card className="col-span-3 row-span-4">

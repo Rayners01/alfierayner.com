@@ -1,9 +1,18 @@
 'use client';
 
+interface Track {
+  isPlaying: boolean;
+  title: string;
+  artist: string;
+  album: string;
+  albumImageUrl: string;
+  songUrl: string;
+}
+
 import { useEffect, useState } from 'react';
 
 export default function NowPlaying() {
-  const [track, setTrack] = useState<any>(null);
+  const [track, setTrack] = useState<Track | null>(null);
 
   useEffect(() => {
     const fetchTrack = async () => {
