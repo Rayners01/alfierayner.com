@@ -49,12 +49,12 @@ export const getAccessToken = async () => {
   const res = await fetch(TOKEN_ENDPOINT, {
     method: 'POST',
     headers: {
-    'Content-Type': 'application/x-www-form-urlencoded'
+    'Content-Type': 'application/x-www-form-urlencoded',
+    'Authorization': 'Basic ' + basic
     },
     body: new URLSearchParams({
-    grant_type: 'refresh_token',
-    refresh_token: refresh_token,
-    client_id: client_id
+      grant_type: 'refresh_token',
+      refresh_token: refresh_token
     })
   });
 
