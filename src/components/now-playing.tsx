@@ -26,7 +26,7 @@ export default function NowPlaying() {
 
   useEffect(() => {
     fetchTrack();
-    const fetchInterval = setInterval(fetchTrack, 15000); // Refresh every 60s
+    const fetchInterval = setInterval(fetchTrack, 15000);
     return () => clearInterval(fetchInterval);
   }, []);
 

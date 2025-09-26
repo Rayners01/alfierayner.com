@@ -44,7 +44,6 @@ export default function Home() {
             const newX = prev.x - velocityRef.current.vx * window.innerWidth * 2
             const newY = prev.y - velocityRef.current.vy * window.innerHeight * 2
 
-            // Check if we reached the "circle page" center
             if (Math.abs(newX) > window.innerWidth || Math.abs(newY) > window.innerHeight) {
               flyingRef.current = false
               setMoving(false)
@@ -52,7 +51,7 @@ export default function Home() {
               setLastOffset({x: newX, y: newY});
               setLastVelocity({ vx: velocityRef.current.vx, vy: velocityRef.current.vy })
               console.log('reached');
-              return { x: 0, y: 0 } // center circle
+              return { x: 0, y: 0 }
             }
 
             return { x: newX, y: newY }
@@ -62,7 +61,6 @@ export default function Home() {
               let newX = prev.x + lastVelocity.vx * window.innerWidth * 1.5;
               let newY = prev.y + lastVelocity.vy * window.innerHeight * 1.5;
 
-              // Clamp to 0 if we would overshoot
               if ((lastVelocity.vx > 0 && newX > 0) || (lastVelocity.vx < 0 && newX < 0)) {
                 newX = 0;
               }

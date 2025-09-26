@@ -31,7 +31,6 @@ const GlobeComponent: React.FC = () => {
     'BW','ZW','ZM'
   ]);
 
-  // Load GeoJSON data
   useEffect(() => {
     fetch(
       "https://raw.githubusercontent.com/vasturiano/globe.gl/master/example/datasets/ne_110m_admin_0_countries.geojson"

@@ -19,7 +19,6 @@ export default function VisitedCountriesCard({ onStartFlying, onStopFlying }: Vi
   const prevPos = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const currentPos = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
 
-  // Animate background and plane rotation
   useEffect(() => {
     let animationFrame: number;
     const radius = 0.3;
@@ -46,7 +45,6 @@ export default function VisitedCountriesCard({ onStartFlying, onStopFlying }: Vi
           }
         }
 
-        // Move plane if flying
         if (flying && planePos) {
           setPlanePos(prev => prev ? {
             x: prev.x + velocity.vx * window.innerWidth,
@@ -67,7 +65,6 @@ export default function VisitedCountriesCard({ onStartFlying, onStopFlying }: Vi
 
   const handleClick = () => {
     if (!flying && planeRef.current) {
-      // Compute velocity from current angle
       const rad = (angle * Math.PI) / 180;
       const speed = 0.005;
       const vx = Math.cos(rad) * speed;
@@ -75,14 +72,12 @@ export default function VisitedCountriesCard({ onStartFlying, onStopFlying }: Vi
 
       setVelocity({ vx, vy });
 
-      // Get plane's current viewport position
       const rect = planeRef.current.getBoundingClientRect();
       setPlanePos({ x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 });
 
       setFlying(true);
       onStartFlying?.(vx, vy);
     } else {
-      // Stop flying
       setFlying(false);
       setPlanePos(null);
       onStopFlying?.();
