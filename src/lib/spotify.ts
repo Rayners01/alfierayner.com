@@ -2,8 +2,6 @@ const client_id = process.env.SPOTIFY_CLIENT_ID!;
 const client_secret = process.env.SPOTIFY_CLIENT_SECRET!;
 const refresh_token = process.env.SPOTIFY_REFRESH_TOKEN!;
 
-console.log(refresh_token);
-
 const basic = Buffer.from(`${client_id}:${client_secret}`).toString('base64');
 
 const TOKEN_ENDPOINT = 'https://accounts.spotify.com/api/token';
@@ -30,9 +28,14 @@ interface Track {
   external_urls: { spotify: string };
 }
 
+interface CurrentlyPlayingTrack extends Track {
+  duration_ms: number;
+}
+
 interface CurrentlyPlayingResponse {
   is_playing: boolean;
-  item: Track;
+  item: CurrentlyPlayingTrack;
+  progress_ms: number;
 }
 
 interface RecentlyPlayedItem {
@@ -66,8 +69,6 @@ export const getNowPlaying = async () => {
 
   const access_token = access.access_token;
 
-  console.log(access);
-
   try {
     const currentlyPlayingRes = await fetch(NOW_PLAYING_ENDPOINT, {
       headers: {
@@ -92,7 +93,9 @@ export const getNowPlaying = async () => {
         artist: song.artists.map(artist => artist.name).join(', '),
         album: song.album.name,
         albumImageUrl: song.album.images[0].url,
-        songUrl: song.external_urls.spotify
+        songUrl: song.external_urls.spotify,
+        progress: 0,
+        duration: 0
       };
     }
 
@@ -104,9 +107,12 @@ export const getNowPlaying = async () => {
       artist: song.item.artists.map(artist => artist.name).join(', '),
       album: song.item.album.name,
       albumImageUrl: song.item.album.images[0].url,
-      songUrl: song.item.external_urls.spotify
+      songUrl: song.item.external_urls.spotify,
+      progress: song.progress_ms,
+      duration: song.item.duration_ms
     };
   } catch (err: unknown) {
+    console.error('Error fetching currently playing:', err);
     return access;
   }
 };

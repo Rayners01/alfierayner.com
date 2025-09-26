@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
 body {
-  background-image: url('/assets/tortoise-shell.svg')
+  background-image: url('/assets/tortoise-shell.svg');
 }
+
+
