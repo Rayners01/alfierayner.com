@@ -3,12 +3,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
-interface VisitedCountriesCardProps {
+interface VisitedCountriesTileProps {
   onStartFlying?: (vx: number, vy: number) => void;
   onStopFlying?: () => void;
 }
 
-export default function VisitedCountriesCard({ onStartFlying, onStopFlying }: VisitedCountriesCardProps) {
+export default function VisitedCountriesTile({ onStartFlying, onStopFlying }: VisitedCountriesTileProps) {
   const bgRef = useRef<HTMLDivElement>(null);
   const planeRef = useRef<HTMLDivElement>(null);
   const [angle, setAngle] = useState(0);
