@@ -8,7 +8,7 @@ import Link from '@/components/ui/link'
 import NowPlaying from '@/components/tiles/now-playing'
 import VisitedCountriesTile from '@/components/tiles/visited-countries-tile'
 import { useState, useRef, useEffect } from 'react';
-import Globe from '@/components/globe'
+import Globe from '@/components/pages/globe'
 import PolaroidTransition from '@/components/pages/photos/transition';
 import PolaroidDeveloping from '@/components/pages/photos/developing';
 const lora = Lora({
@@ -111,21 +111,21 @@ export default function Home() {
                 </p>
               </div>
               <div className="flex flex-row gap-4 w-full h-10">
-                <Button className="w-1/5">
+                <Button className="w-1/5" link="https://www.github.com/Rayners01">
                   <Image
                     src='/assets/github.svg'
                     width={20}
                     height={20}
                     alt="Github logo"
-                    />
+                  />
                 </Button>
-                <Button className="w-1/5">
+                <Button className="w-1/5" link="https://www.linkedin.com/in/alfie-rayner-ab64a633a/">
                   <Image
                     src='/assets/linkedin.svg'
                     width={20}
                     height={20}
-                    alt="Github logo"
-                    />
+                    alt="LinkedIn logo"
+                  />
                 </Button>
               </div>
             </div>
@@ -136,57 +136,50 @@ export default function Home() {
                 height={250}
                 alt="Photo of Alfie Rayner, taken at Victoria Falls, Zimbabwe."
                 className="rounded-full border-green-700 border-4"
-                />
+              />
             </div>
           </Card>
           
           <Card className="col-span-3 row-span-6 text-sm">
-            <h1 className="text-xl font-semibold">About me</h1>
-            <p>I&lsquo;m a software developer from Brighton, England.</p>
-            <br></br>
-            <p>Currently, I am in my second-year of my MEng Computer Science degree at the University of Warwick.</p>
-            <br></br>
-            <p>My main interests in Computer Science include:</p>
-            <ul className="list-disc ml-4">
+            <h1 className="text-xl font-semibold mb-2">About me</h1>
+            <p className="mb-4">I&lsquo;m a software developer from Brighton, England.</p>
+            <p className="mb-4">Currently, I am in my second-year of my MEng Computer Science degree at the University of Warwick.</p>
+            <p className="mb-2">My main interests in Computer Science include:</p>
+            <ul className="list-disc ml-4 mb-4">
               <li>Full-stack Development</li>
               <li>Artificial Intelligence</li>
               <li>Data Science</li>
             </ul>
-            <br></br>
-            <p>I primarily code in Java and JavaScript, however I also have experience using Python, C and C#.</p>
-            <br></br>
+            <p className="mb-4">I primarily code in Java and JavaScript, however I also have experience using Python, C and C#.</p>
             <p>Beyond programming, I&lsquo;m passionate about music, travelling, playing the piano, football and photography.</p>
           </Card>
           
           <Card className="col-span-3 row-span-4">
-            <h1 className="text-xl font-semibold">Contact me!</h1>
-            <br></br>
-            <p className="italic text-green-500">E-mail</p>
-            <p>contact@alfierayner.com</p>
-            <br></br>
-            <p className="italic text-green-500">Phone number</p>
-            <p>+44 7576 998476</p>
-            <br></br>
-            <p className="italic text-green-500">Social Media</p>
+            <h1 className="text-xl font-semibold mb-2">Contact me!</h1>
+            <p className="italic text-green-500 mb-1">E-mail</p>
+            <p className="mb-4">
+              <a href="mailto:contact@alfierayner.com">
+                contact@alfierayner.com
+              </a>
+            </p>
+            <p className="italic text-green-500 mb-1">Phone number</p>
+            <p className="mb-4">+44 7576 998476</p>
+            <p className="italic text-green-500 mb-1">Social Media</p>
             <p>
-              <Link href="https://www.github.com/Rayners01">
-                Github
-              </Link>
+              <Link href="https://www.github.com/Rayners01">Github</Link>
             </p>
             <p>
-              <Link href="https://www.linkedin.com/in/alfie-rayner-ab64a633a/">
-                LinkedIn
-              </Link>
+              <Link href="https://www.linkedin.com/in/alfie-rayner-ab64a633a/">LinkedIn</Link>
             </p>
-
           </Card>
           
           <Card className="col-span-3 row-span-1 flex justify-center items-center">
-            <p className={`text-xl ${lora.className}`}>{(new Date()).toLocaleString('en-GB', { hour: 'numeric', minute: 'numeric', hour12: true}).toUpperCase()} BST</p>
+            <p className={`text-xl ${lora.className}`}>
+              {(new Date()).toLocaleString('en-GB', { hour: 'numeric', minute: 'numeric', hour12: true }).toUpperCase()} BST
+            </p>
           </Card>
 
-          <div className="col-span-3 row-span-1 bg-lime-200 border-green-700 border-2 rounded-lg
-        hover:border-yellow-400">
+          <div className="col-span-3 row-span-1 bg-lime-200 border-green-700 border-2 rounded-lg hover:border-yellow-400">
             <VisitedCountriesTile 
               onStartFlying={onStartFlying}
               onStopFlying={onStopFlying}
@@ -197,24 +190,19 @@ export default function Home() {
             <NowPlaying />
           </Card>
           
-          <Card className="col-span-3 row-span-1">
-          </Card>
+          <Card className="col-span-3 row-span-1" />
+          <Card className="col-span-3 row-span-1" />
+          <Card className="col-span-3 row-span-1" />
           
-          <Card className="col-span-3 row-span-1">
-          </Card>
-          
-          <Card className="col-span-3 row-span-1">
-          </Card>
-          
-          <Card className="col-span-3 row-span-1 flex flex-row justify-center items-center h-full gap-4"
+          <Card 
+            className="col-span-3 row-span-1 flex flex-row justify-center items-center h-full gap-4 cursor-pointer"
             onClick={() => setView('transition')}
           >
             <p>Photo Library</p>
             <Image src="/assets/polaroid.svg" alt="Polaroid camera" width="30" height="30" />
           </Card>
 
-          <Card className="col-span-3 row-span-1">
-          </Card>
+          <Card className="col-span-3 row-span-1" />
           
           <Card className="col-span-3 row-span-1 text-sm">
             <p>&copy; 2025 Alfie Rayner</p>
@@ -223,8 +211,7 @@ export default function Home() {
         </div>
       </div>
     )
-
-
+    
     switch (view) {
       case "main":
         return mainPage;

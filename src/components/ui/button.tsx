@@ -1,8 +1,11 @@
+'use client';
+
 import React from 'react';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   width?: string | number;
   height?: string | number;
+  link?: string;
 }
 
 export default function Button({
@@ -10,8 +13,21 @@ export default function Button({
   className = '',
   width,
   height,
+  link,
+  onClick,
   ...props
 }: ButtonProps) {
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (onClick) {
+      onClick(e); // run the provided onClick
+    } else if (link) {
+      // slight delay to show click animation
+      setTimeout(() => {
+        window.open(link, '_blank'); // opens link in new tab
+      }, 150);
+    }
+  };
+
   return (
     <button
       className={`
@@ -28,6 +44,7 @@ export default function Button({
         active:border-b-2 active:border-r-2
         ${className}
       `}
+      onClick={handleClick}
       {...props}
     >
       {children}

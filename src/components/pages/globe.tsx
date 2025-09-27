@@ -3,8 +3,8 @@
 import React, { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import * as THREE from 'three';
-import Button from "./ui/button";
-import Card from "./ui/card";
+import Button from "../ui/button";
+import Card from "../ui/card";
 
 const Globe = dynamic(() => import("react-globe.gl"), { ssr: false });
 
