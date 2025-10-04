@@ -83,7 +83,7 @@ export default function Home() {
 
     animate()
     return () => cancelAnimationFrame(animationFrame)
-  }, [moving])
+  }, [moving, lastOffset, lastVelocity])
 
     const goBackFromGlobe = () => {
       setOffset(lastOffset);
