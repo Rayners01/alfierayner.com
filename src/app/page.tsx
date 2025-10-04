@@ -77,7 +77,6 @@ export default function Home() {
             }) 
         }
       }
-
       animationFrame = requestAnimationFrame(animate)
     }
 
