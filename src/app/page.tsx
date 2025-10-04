@@ -3,7 +3,6 @@
 import Button from '@/components/ui/button'
 import Card from '@/components/ui/card'
 import Image from 'next/image'
-import { Lora } from 'next/font/google'
 import Link from '@/components/ui/link'
 import NowPlaying from '@/components/tiles/now-playing'
 import VisitedCountriesTile from '@/components/tiles/visited-countries-tile'
@@ -11,9 +10,7 @@ import { useState, useRef, useEffect } from 'react';
 import Globe from '@/components/pages/globe'
 import PolaroidTransition from '@/components/pages/photos/transition';
 import PolaroidDeveloping from '@/components/pages/photos/developing';
-const lora = Lora({
-  subsets: ['latin']
-})
+import Clock from '@/components/ui/clock';
 
 export default function Home() {
 
@@ -93,7 +90,7 @@ export default function Home() {
       setView('main')
       setMoving(true);
     }
-
+    
     const mainPage = (
       <div 
         className="flex justify-center items-center h-screen text-green-700 overflow-hidden"
@@ -132,8 +129,8 @@ export default function Home() {
             <div className="w-1/3 flex justify-center items-center p-4">
               <Image 
                 src='/assets/alfie_rayner.jpg'
-                width={250}
-                height={250}
+                width={220}
+                height={220}
                 alt="Photo of Alfie Rayner, taken at Victoria Falls, Zimbabwe."
                 className="rounded-full border-green-700 border-4"
               />
@@ -174,9 +171,7 @@ export default function Home() {
           </Card>
           
           <Card className="col-span-3 row-span-1 flex justify-center items-center">
-            <p className={`text-xl ${lora.className}`}>
-              {(new Date()).toLocaleString('en-GB', { hour: 'numeric', minute: 'numeric', hour12: true }).toUpperCase()} BST
-            </p>
+            <Clock />
           </Card>
 
           <div className="col-span-3 row-span-1 bg-lime-200 border-green-700 border-2 rounded-lg hover:border-yellow-400">
@@ -211,7 +206,7 @@ export default function Home() {
         </div>
       </div>
     )
-    
+
     switch (view) {
       case "main":
         return mainPage;
