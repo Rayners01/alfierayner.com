@@ -85,6 +85,9 @@ export const getNowPlaying = async () => {
       });
 
       const recentData: RecentlyPlayedResponse = await recentRes.json();
+      if (!recentData.items) {
+        return {};
+      }
       const song = recentData.items[0].track;
 
       return {
@@ -100,6 +103,10 @@ export const getNowPlaying = async () => {
     }
 
     const song: CurrentlyPlayingResponse = await currentlyPlayingRes.json();
+
+    if (!song) {
+      return {};
+    }
 
     return {
       isPlaying: song.is_playing,
