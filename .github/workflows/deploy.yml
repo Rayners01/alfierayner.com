@@ -19,4 +19,5 @@ jobs:
             git pull origin main
             npm install
             npm run build
+            fuser -k 3000/tcp || true
             pm2 restart alfierayner-com
