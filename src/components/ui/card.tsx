@@ -1,16 +1,22 @@
 import React from 'react';
 
+interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+  padded?: boolean;
+}
+
 export default function Card({
   children,
   className = '',
+  padded = true,
   ...props
-}: React.HTMLAttributes<HTMLDivElement>) {
+}: CardProps) {
   return (
     <div
       className={`
-        ${className}
         bg-lime-200 border-green-700 border-2 rounded-lg
-        p-4 hover:border-yellow-400
+        hover:border-yellow-400
+        ${padded ? 'p-4' : ''}
+        ${className}
       `}
       {...props}
     >

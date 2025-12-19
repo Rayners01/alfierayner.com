@@ -184,8 +184,11 @@ export default function Home() {
             <NowPlaying />
           </Card>
           
-          <Card className="col-span-3 row-span-1" />
-          <Card className="col-span-3 row-span-1" />
+          <Card className="col-span-3 row-span-2" padded={false}>
+            <Link href="/kilimanjaro">
+              <img src="/assets/kili.png" alt="Kilimanjaro landscape"  className="w-full h-full rounded-md" />
+            </Link>
+          </Card>
           <Card className="col-span-3 row-span-1" />
           
           <Card 
