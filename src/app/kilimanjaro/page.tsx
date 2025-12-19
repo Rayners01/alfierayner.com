@@ -20,7 +20,6 @@ const PATH_WAYPOINTS = [
 ];
 
 export default function MountainTracker() {
-    // Helper to get Dar es Salaam hour
     const getKiliHour = () => {
         return parseInt(new Intl.DateTimeFormat('en-GB', {
             hour: 'numeric',
@@ -32,6 +31,7 @@ export default function MountainTracker() {
     const [displaySteps, setDisplaySteps] = useState(0);
     const [hour, setHour] = useState(getKiliHour());
     const [showDebug, setShowDebug] = useState(false);
+    const [showHUD, setShowHUD] = useState(true);
     
     const hikerRef = useRef<HTMLImageElement>(null);
     const visualStepRef = useRef(0);
@@ -89,11 +89,10 @@ export default function MountainTracker() {
         const fetchDonation = async () => {
             const res = await fetch('/api/donation-total').catch(() => null);
             const data = await res?.json();
-            updateTarget(data?.total ?? 291.01);
+            updateTarget(data?.total ?? 0);
         };
         fetchDonation();
 
-        // Update hour using the timezone-specific helper
         const clock = setInterval(() => setHour(getKiliHour()), 60000);
         
         return () => { 
@@ -110,39 +109,48 @@ export default function MountainTracker() {
             `}</style>
 
             <div className="relative w-full max-w-5xl aspect-video bg-neutral-800 border-[0.5vmin] border-neutral-200 overflow-hidden shadow-2xl">
-                {/* --- HUD --- */}
-                <div className="absolute top-[3%] left-1/2 -translate-x-1/2 z-20 w-[80%] max-w-[420px] bg-black/40 border-[0.2vmin] border-white/20 p-[1.5vmin]">
-                    <div className="flex justify-between mb-[1vmin] uppercase tracking-tighter text-[min(1.2vmin,12px)]">
-                        <div className="flex flex-col gap-1">
-                            <span className="text-white/50 text-[0.7em]">Altitude</span>
-                            <span>
-                                {currentAltitude}m
-                                <span className="text-white/50 ml-1"> / 5895m</span>
-                            </span>
-                        </div>
-                        <div className="flex flex-col items-end gap-1">
-                            <span className="text-white/50 text-[0.7em]">Raised</span>
-                            <span className="text-yellow-400">£{displaySteps.toFixed(2)}</span>
-                        </div>
-                    </div>
-                    
-                    <div className="h-[1vmin] min-h-[4px] bg-black/50 border-[0.1vmin] border-white/20 p-[0.2vmin] mb-[1vmin]">
-                        <div className="h-full bg-green-500/80 transition-all duration-300" style={{ width: `${progressPercent}%` }} />
-                    </div>
+                
+                <div className="absolute top-[3%] left-1/2 -translate-x-1/2 z-20 w-[80%] max-w-[420px] pointer-events-none">
+                    <button 
+                        onClick={() => setShowHUD(!showHUD)} 
+                        className="absolute right-full top-0 -mr-[0.1vmin] pointer-events-auto bg-black/30 border-[0.15vmin] border-white/20 h-[3.5vmin] w-[3.5vmin] min-h-[22px] min-w-[22px] flex items-center justify-center hover:bg-black/50 transition-colors"
+                    >
+                        {showHUD ? "<" : ">"}
+                    </button>
 
-                    <div className="text-center">
-                        <p className="text-green-300/80 leading-tight uppercase text-[min(1vmin,9px)]">
-                            Every £1 Raised = ~4m climbed
-                        </p>
-                    </div>
+                    {showHUD && (
+                        <div className="w-full bg-black/30 border-[0.2vmin] border-white/20 p-[1.5vmin] pointer-events-auto">
+                            <div className="flex justify-between mb-[1vmin] uppercase tracking-tighter text-[min(1.2vmin,12px)]">
+                                <div className="flex flex-col gap-1">
+                                    <span className="text-white/50 text-[0.7em]">Altitude</span>
+                                    <span>
+                                        {currentAltitude}m
+                                        <span className="text-white/50 ml-1"> / 5895m</span>
+                                    </span>
+                                </div>
+                                <div className="flex flex-col items-end gap-1">
+                                    <span className="text-white/50 text-[0.7em]">Raised</span>
+                                    <span className="text-yellow-400">£{displaySteps.toFixed(2)}</span>
+                                </div>
+                            </div>
+                            
+                            <div className="h-[1vmin] min-h-[4px] bg-black/50 border-[0.1vmin] border-white/20 p-[0.2vmin] mb-[1vmin]">
+                                <div className="h-full bg-green-500/80 transition-all duration-300" style={{ width: `${progressPercent}%` }} />
+                            </div>
+
+                            <div className="text-center">
+                                <p className="text-green-300/80 leading-tight uppercase text-[min(1vmin,9px)]">
+                                    Every £1 Raised = ~4m climbed
+                                </p>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
-                {/* --- ASSETS --- */}
                 <img src={`/assets/kili/bg_${imgIndex}.png`} className="absolute inset-0 w-full h-full object-cover" alt="" />
                 <img ref={hikerRef} className="absolute z-[2] w-[4.5%] h-auto -translate-x-1/2 -translate-y-full" style={{ imageRendering: 'pixelated' }} alt="" />
                 <img src={`/assets/kili/trees_${imgIndex}.png`} className="absolute inset-0 w-full h-full object-cover z-[3] pointer-events-none" alt="" />
 
-                {/* --- DONATE BUTTON --- */}
                 <div className="absolute bottom-[6%] left-1/2 -translate-x-1/2 z-30">
                     <a href="https://givestar.io/gs/alfie-rayner" target="_blank" rel="noopener noreferrer" 
                        className="block bg-yellow-200 border-[0.3vmin] border-black shadow-[0.4vmin_0.4vmin_0_0_#000] active:translate-y-[0.4vmin] active:shadow-none px-[2vmin] py-[1vmin] text-black uppercase text-[min(2vmin,16px)] text-center">
@@ -150,7 +158,6 @@ export default function MountainTracker() {
                     </a>
                 </div>
 
-                {/* --- DEBUG MENU --- */}
                 <div className="absolute bottom-[3%] left-[3%] z-40 flex flex-col items-start gap-1">
                     {showDebug && (
                         <div className="bg-black/60 border-[0.2vmin] border-white/20 p-[1.5vmin] w-[22vmin] min-w-[130px] text-[min(1vmin,10px)] uppercase">
@@ -164,7 +171,7 @@ export default function MountainTracker() {
                             </div>
                         </div>
                     )}
-                    <button onClick={() => setShowDebug(!showDebug)} className="bg-black/40 border-[0.15vmin] border-white/20 h-[3.5vmin] w-[3.5vmin] min-h-[22px] min-w-[22px] flex items-center justify-center hover:bg-black/60 transition-colors">
+                    <button onClick={() => setShowDebug(!showDebug)} className="bg-black/30 border-[0.15vmin] border-white/20 h-[3.5vmin] w-[3.5vmin] min-h-[22px] min-w-[22px] flex items-center justify-center hover:bg-black/50 transition-colors">
                         {showDebug ? "v" : "^"}
                     </button>
                 </div>
