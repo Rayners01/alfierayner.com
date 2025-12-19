@@ -20,17 +20,14 @@ const PATH_WAYPOINTS = [
 ];
 
 export default function MountainTracker() {
-    const getKiliHour = () => {
-        const h = parseInt(new Intl.DateTimeFormat('en-GB', {
+    const getKiliHour = () => parseInt(new Intl.DateTimeFormat('en-GB', {
             hour: 'numeric',
             hourCycle: 'h23',
             timeZone: 'Africa/Dar_es_Salaam'
         }).format(new Date()));
-        return h;
-    };
 
     const [displaySteps, setDisplaySteps] = useState(0);
-    const [hour, setHour] = useState(getKiliHour());
+    const [hour, setHour] = useState<number>(getKiliHour());
     const [showDebug, setShowDebug] = useState(false);
     const [showHUD, setShowHUD] = useState(true);
     
@@ -87,6 +84,8 @@ export default function MountainTracker() {
     };
 
     useEffect(() => {
+        setHour(getKiliHour());
+        
         const fetchDonation = async () => {
             const res = await fetch('/api/donation-total').catch(() => null);
             const data = await res?.json();
@@ -94,7 +93,10 @@ export default function MountainTracker() {
         };
         fetchDonation();
 
-        const clock = setInterval(() => setHour(getKiliHour()), 60000);
+        const clock = setInterval(() => {
+            const currentKiliHour = getKiliHour();
+            setHour((prev) => (prev !== currentKiliHour ? currentKiliHour : prev));
+        }, 60000);
         
         return () => { 
             clearInterval(clock); 
@@ -148,9 +150,9 @@ export default function MountainTracker() {
                     )}
                 </div>
 
-                <img src={`/assets/kili/bg_${imgIndex}.png`} className="absolute inset-0 w-full h-full object-cover" alt="" />
+                <img key={`bg-${hour}`} src={`/assets/kili/bg_${imgIndex}.png`} className="absolute inset-0 w-full h-full object-cover" alt="" />
                 <img ref={hikerRef} className="absolute z-[2] w-[4.5%] h-auto -translate-x-1/2 -translate-y-full" style={{ imageRendering: 'pixelated' }} alt="" />
-                <img src={`/assets/kili/trees_${imgIndex}.png`} className="absolute inset-0 w-full h-full object-cover z-[3] pointer-events-none" alt="" />
+                <img key={`trees-${hour}`} src={`/assets/kili/trees_${imgIndex}.png`} className="absolute inset-0 w-full h-full object-cover z-[3] pointer-events-none" alt="" />
 
                 <div className="absolute bottom-[6%] left-1/2 -translate-x-1/2 z-30">
                     <a href="https://givestar.io/gs/alfie-rayner" target="_blank" rel="noopener noreferrer" 
