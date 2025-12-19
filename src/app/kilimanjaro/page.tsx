@@ -119,12 +119,12 @@ export default function KilimanjaroTracker() {
                 input[type=range]::-moz-range-thumb { height:1.5vmin; width:1.5vmin; min-width:10px; background:#facc15; border:1px solid #000; cursor:pointer; }
             `}</style>
 
-            <div className="relative w-full max-w-5xl aspect-video bg-neutral-800 border-[0.5vmin] border-neutral-200 overflow-hidden shadow-2xl">
+            <div className="relative w-full max-w-6xl aspect-video bg-neutral-800 border-[0.5vmin] border-neutral-200 overflow-hidden shadow-2xl">
                 
-                <div className="absolute top-[3%] left-1/2 -translate-x-1/2 z-20 w-[80%] max-w-[420px] pointer-events-none">
+                <div className="absolute top-[3%] left-1/2 -translate-x-1/2 z-20 w-[60%] max-w-[420px] pointer-events-none">
                     <button 
                         onClick={() => setShowHUD(!showHUD)} 
-                        className="absolute right-full top-0 -mr-[0.1vmin] pointer-events-auto bg-black/30 border-[0.15vmin] border-white/20 h-[3.5vmin] w-[3.5vmin] min-h-[22px] min-w-[22px] flex items-center justify-center hover:bg-black/50 transition-colors"
+                        className="absolute right-full top-0 -mr-[0.1vmin] pointer-events-auto bg-black/30 border-[0.15vmin] border-white/20 h-[3vmin] w-[3vmin] text-xs min-h-[16px] min-w-[16px] flex items-center justify-center hover:bg-black/50 transition-colors"
                     >
                         {showHUD ? "<" : ">"}
                     </button>
@@ -186,6 +186,10 @@ export default function KilimanjaroTracker() {
                         {showDebug ? "v" : "^"}
                     </button>
                 </div>
+            </div>
+            <div className="mt-3 text-center text-[min(0.9vmin,10px)] text-white/50 uppercase tracking-tight">
+                <p>Live data from Givestar</p>
+                <p>Artwork © 2025 Alfie Rayner</p>
             </div>
         </main>
     );
