@@ -7,7 +7,7 @@ const press_start_2P = Press_Start_2P({ subsets: ['latin'], weight: "400" });
 
 const TOTAL_STEPS = 1500;
 const KILI_HEIGHT = 5895;
-const ANIMATION_SPEED = 15;
+const ANIMATION_SPEED = 12;
 const PATH_WAYPOINTS = [
     { atStep: 0, x: 19, y: 99 }, { atStep: 50, x: 16.52, y: 95 }, { atStep: 100, x: 11.01, y: 93 }, { atStep: 150, x: 8.37, y: 89 },
     { atStep: 200, x: 11.01, y: 86 }, { atStep: 250, x: 8.5, y: 79 }, { atStep: 300, x: 8.6, y: 74 }, { atStep: 350, x: 15.42, y: 71 },
@@ -19,36 +19,35 @@ const PATH_WAYPOINTS = [
     { atStep: 1400, x: 52.97, y: 25.89 }, { atStep: 1450, x: 51.65, y: 24.14 }, { atStep: 1500, x: 51.87, y: 23.55 }
 ];
 
-export default function MountainTracker() {
-    const getKiliHour = () => parseInt(new Intl.DateTimeFormat('en-GB', {
-            hour: 'numeric',
-            hourCycle: 'h23',
-            timeZone: 'Africa/Dar_es_Salaam'
-        }).format(new Date()));
+export default function KilimanjaroTracker() {
+    const getKiliHour = () =>
+        parseInt(
+            new Intl.DateTimeFormat('en-GB', {
+                hour: 'numeric',
+                hourCycle: 'h23',
+                timeZone: 'Africa/Dar_es_Salaam'
+            }).format(new Date())
+        );
 
     const [displaySteps, setDisplaySteps] = useState(0);
-    const [hour, setHour] = useState<number>(getKiliHour());
+    const [hour, setHour] = useState<number | null>(null);
     const [showDebug, setShowDebug] = useState(false);
     const [showHUD, setShowHUD] = useState(true);
-    
+
     const hikerRef = useRef<HTMLImageElement>(null);
     const visualStepRef = useRef(0);
     const targetStepRef = useRef(0);
     const animFrameId = useRef<number | null>(null);
 
-    const imgIndex = ((hour + 18) % 24) || 24;
-    const progressPercent = Math.min((displaySteps / TOTAL_STEPS) * 100, 100);
-    const currentAltitude = Math.floor((displaySteps / TOTAL_STEPS) * KILI_HEIGHT);
-
-    const renderHiker = (step: number) => {
+    const renderHiker = (step: number, direction: boolean) => {
         if (!hikerRef.current) return;
         let start = PATH_WAYPOINTS[0];
         let end = PATH_WAYPOINTS[PATH_WAYPOINTS.length - 1];
 
         for (let i = 0; i < PATH_WAYPOINTS.length - 1; i++) {
-            if (step >= PATH_WAYPOINTS[i].atStep && step <= PATH_WAYPOINTS[i+1].atStep) {
+            if (step >= PATH_WAYPOINTS[i].atStep && step <= PATH_WAYPOINTS[i + 1].atStep) {
                 start = PATH_WAYPOINTS[i];
-                end = PATH_WAYPOINTS[i+1];
+                end = PATH_WAYPOINTS[i + 1];
                 break;
             }
         }
@@ -58,20 +57,23 @@ export default function MountainTracker() {
         const x = start.x + (end.x - start.x) * progress;
         const y = start.y + (end.y - start.y) * progress;
 
+        const facing = (direction && end.x <= start.x ) || (!direction && end.x > start.x) ? 'left' : 'right';
+
         hikerRef.current.style.left = `${x}%`;
         hikerRef.current.style.top = `${y}%`;
-        hikerRef.current.src = `/assets/kili/hiker_${end.x <= start.x ? 'left' : 'right'}.png`;
+        hikerRef.current.src = `/assets/kili/hiker_${facing}.png`;
     };
 
     const animate = () => {
         const diff = targetStepRef.current - visualStepRef.current;
+        const direction = targetStepRef.current > visualStepRef.current;
         if (Math.abs(diff) <= ANIMATION_SPEED) {
             visualStepRef.current = targetStepRef.current;
-            renderHiker(visualStepRef.current);
+            renderHiker(visualStepRef.current, direction);
             animFrameId.current = null;
         } else {
             visualStepRef.current += Math.sign(diff) * ANIMATION_SPEED;
-            renderHiker(visualStepRef.current);
+            renderHiker(visualStepRef.current, direction);
             animFrameId.current = requestAnimationFrame(animate);
         }
     };
@@ -85,7 +87,7 @@ export default function MountainTracker() {
 
     useEffect(() => {
         setHour(getKiliHour());
-        
+
         const fetchDonation = async () => {
             const res = await fetch('/api/donation-total').catch(() => null);
             const data = await res?.json();
@@ -94,15 +96,21 @@ export default function MountainTracker() {
         fetchDonation();
 
         const clock = setInterval(() => {
-            const currentKiliHour = getKiliHour();
-            setHour((prev) => (prev !== currentKiliHour ? currentKiliHour : prev));
+            const current = getKiliHour();
+            setHour(prev => (prev !== current ? current : prev));
         }, 60000);
-        
-        return () => { 
-            clearInterval(clock); 
-            if (animFrameId.current) cancelAnimationFrame(animFrameId.current); 
+
+        return () => {
+            clearInterval(clock);
+            if (animFrameId.current) cancelAnimationFrame(animFrameId.current);
         };
     }, []);
+
+    if (hour === null) return null;
+
+    const imgIndex = ((hour + 18) % 24) || 24;
+    const progressPercent = Math.min((displaySteps / TOTAL_STEPS) * 100, 100);
+    const currentAltitude = Math.floor((displaySteps / TOTAL_STEPS) * KILI_HEIGHT);
 
     return (
         <main className={`flex flex-col items-center justify-center min-h-screen bg-neutral-950 p-2 ${press_start_2P.className} text-white`}>
@@ -156,8 +164,8 @@ export default function MountainTracker() {
 
                 <div className="absolute bottom-[6%] left-1/2 -translate-x-1/2 z-30">
                     <a href="https://givestar.io/gs/alfie-rayner" target="_blank" rel="noopener noreferrer" 
-                       className="block bg-yellow-200 border-[0.3vmin] border-black shadow-[0.4vmin_0.4vmin_0_0_#000] active:translate-y-[0.4vmin] active:shadow-none px-[2vmin] py-[1vmin] text-black uppercase text-[min(2vmin,16px)] text-center">
-                        Donate!
+                       className="block bg-yellow-300 border-[0.3vmin] border-black shadow-[0.4vmin_0.4vmin_0_0_#000] active:translate-y-[0.4vmin] active:shadow-none px-[2vmin] py-[1vmin] text-black uppercase text-[min(2vmin,16px)] text-center">
+                            Donate!
                     </a>
                 </div>
 

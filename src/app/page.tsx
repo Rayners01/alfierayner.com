@@ -12,8 +12,6 @@ import PolaroidTransition from '@/components/pages/photos/transition';
 import PolaroidDeveloping from '@/components/pages/photos/developing';
 import Clock from '@/components/ui/clock';
 
-export const dynamic = 'force-dynamic';
-
 export default function Home() {
 
   const [offset, setOffset] = useState({ x: 0, y: 0 })
