@@ -20,8 +20,17 @@ const PATH_WAYPOINTS = [
 ];
 
 export default function MountainTracker() {
+    // Helper to get Dar es Salaam hour
+    const getKiliHour = () => {
+        return parseInt(new Intl.DateTimeFormat('en-GB', {
+            hour: 'numeric',
+            hourCycle: 'h23',
+            timeZone: 'Africa/Dar_es_Salaam'
+        }).format(new Date()));
+    };
+
     const [displaySteps, setDisplaySteps] = useState(0);
-    const [hour, setHour] = useState(new Date().getHours());
+    const [hour, setHour] = useState(getKiliHour());
     const [showDebug, setShowDebug] = useState(false);
     
     const hikerRef = useRef<HTMLImageElement>(null);
@@ -83,8 +92,14 @@ export default function MountainTracker() {
             updateTarget(data?.total ?? 291.01);
         };
         fetchDonation();
-        const clock = setInterval(() => setHour(new Date().getHours()), 60000);
-        return () => { clearInterval(clock); if (animFrameId.current) cancelAnimationFrame(animFrameId.current); };
+
+        // Update hour using the timezone-specific helper
+        const clock = setInterval(() => setHour(getKiliHour()), 60000);
+        
+        return () => { 
+            clearInterval(clock); 
+            if (animFrameId.current) cancelAnimationFrame(animFrameId.current); 
+        };
     }, []);
 
     return (
@@ -95,6 +110,7 @@ export default function MountainTracker() {
             `}</style>
 
             <div className="relative w-full max-w-5xl aspect-video bg-neutral-800 border-[0.5vmin] border-neutral-200 overflow-hidden shadow-2xl">
+                {/* --- HUD --- */}
                 <div className="absolute top-[3%] left-1/2 -translate-x-1/2 z-20 w-[80%] max-w-[420px] bg-black/40 border-[0.2vmin] border-white/20 p-[1.5vmin]">
                     <div className="flex justify-between mb-[1vmin] uppercase tracking-tighter text-[min(1.2vmin,12px)]">
                         <div className="flex flex-col gap-1">
@@ -121,10 +137,12 @@ export default function MountainTracker() {
                     </div>
                 </div>
 
+                {/* --- ASSETS --- */}
                 <img src={`/assets/kili/bg_${imgIndex}.png`} className="absolute inset-0 w-full h-full object-cover" alt="" />
                 <img ref={hikerRef} className="absolute z-[2] w-[4.5%] h-auto -translate-x-1/2 -translate-y-full" style={{ imageRendering: 'pixelated' }} alt="" />
                 <img src={`/assets/kili/trees_${imgIndex}.png`} className="absolute inset-0 w-full h-full object-cover z-[3] pointer-events-none" alt="" />
 
+                {/* --- DONATE BUTTON --- */}
                 <div className="absolute bottom-[6%] left-1/2 -translate-x-1/2 z-30">
                     <a href="https://givestar.io/gs/alfie-rayner" target="_blank" rel="noopener noreferrer" 
                        className="block bg-yellow-200 border-[0.3vmin] border-black shadow-[0.4vmin_0.4vmin_0_0_#000] active:translate-y-[0.4vmin] active:shadow-none px-[2vmin] py-[1vmin] text-black uppercase text-[min(2vmin,16px)] text-center">
@@ -132,6 +150,7 @@ export default function MountainTracker() {
                     </a>
                 </div>
 
+                {/* --- DEBUG MENU --- */}
                 <div className="absolute bottom-[3%] left-[3%] z-40 flex flex-col items-start gap-1">
                     {showDebug && (
                         <div className="bg-black/60 border-[0.2vmin] border-white/20 p-[1.5vmin] w-[22vmin] min-w-[130px] text-[min(1vmin,10px)] uppercase">
