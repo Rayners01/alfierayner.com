@@ -152,8 +152,8 @@ export default function KilimanjaroTracker() {
             <style jsx global>{`
                 :root { background-color: #0a0a0a; color-scheme: dark; }
                 body { background-color: #0a0a0a; margin: 0; padding: 0; overflow: hidden; }
-                input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; height:1.5vmin; width:1.5vmin; min-width:10px; background:#facc15; border:1px solid #000; cursor:pointer; }
-                input[type=range]::-moz-range-thumb { height:1.5vmin; width:1.5vmin; min-width:10px; background:#facc15; border:1px solid #000; cursor:pointer; }
+                input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; height:1.5vmin; width:1.5vmin; min-width:14px; min-height:14px; background:#facc15; border:1px solid #000; cursor:pointer; }
+                input[type=range]::-moz-range-thumb { height:1.5vmin; width:1.5vmin; min-width:14px; min-height:14px; background:#facc15; border:1px solid #000; cursor:pointer; }
             `}</style>
             
             <div className="relative aspect-video w-[90dvw] h-auto max-w-[calc(90dvh*16/9)] max-h-[90dvh] bg-neutral-800 border-[0.5vmin] border-neutral-200 overflow-hidden shadow-2xl">
@@ -176,21 +176,21 @@ export default function KilimanjaroTracker() {
                     </button>
                     {showHUD && (
                         <div className="w-full bg-black/30 border-[0.2vmin] border-white/20 p-[1.5vmin] pointer-events-auto">
-                            <div className="flex justify-between mb-[1vmin] uppercase tracking-tighter text-[min(1.2vmin,12px)]">
+                            <div className="flex justify-between mb-[0.8vmin] uppercase tracking-tighter text-[min(1.2vmin,14px)]">
                                 <div className="flex flex-col gap-1">
-                                    <span className="text-white/50 text-[0.7em]">Altitude</span>
+                                    <span className="text-white/50">Altitude</span>
                                     <span><span ref={altitudeTextRef}>0m</span><span className="text-white/50 ml-1"> / 5895m</span></span>
                                 </div>
                                 <div className="flex flex-col items-end gap-1">
-                                    <span className="text-white/50 text-[0.7em]">Raised</span>
+                                    <span className="text-white/50">Raised</span>
                                     <span className="text-yellow-400" ref={raisedTextRef}>£0.00</span>
                                 </div>
                             </div>
-                            <div className="h-[1vmin] min-h-[4px] bg-black/50 border-[0.1vmin] border-white/20 p-[0.2vmin] mb-[1vmin]">
+                            <div className="h-[1vmin] min-h-[4px] bg-black/50 border-[0.1vmin] border-white/20 p-[0.2vmin] mb-[0.8vmin]">
                                 <div ref={progressBarRef} className="h-full bg-green-500/80" style={{ width: `0%` }} />
                             </div>
                             <div className="text-center">
-                                <p className="text-green-300/80 leading-tight uppercase text-[min(1vmin,9px)]">Every £1 Raised = ~4m climbed</p>
+                                <p className="text-green-300/80 leading-tight uppercase text-[min(1vmin,11px)]">Every £1 Raised = ~4m climbed</p>
                             </div>
                         </div>
                     )}
