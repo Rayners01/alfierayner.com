@@ -34,6 +34,7 @@ export default function KilimanjaroTracker() {
     const [isTransitioning, setIsTransitioning] = useState(false);
     const [showDebug, setShowDebug] = useState(false);
     const [showHUD, setShowHUD] = useState(true);
+    const [sliderValue, setSliderValue] = useState(0);
 
     const hikerRef = useRef<HTMLImageElement>(null);
     const altitudeTextRef = useRef<HTMLSpanElement>(null);
@@ -97,6 +98,7 @@ export default function KilimanjaroTracker() {
     const updateTarget = (val: number) => {
         const parsedVal = Math.max(0, val);
         targetStepRef.current = parsedVal;
+        setSliderValue(parsedVal);
         if (animFrameId.current === null) {
             animFrameId.current = requestAnimationFrame(animate);
         }
@@ -216,7 +218,7 @@ export default function KilimanjaroTracker() {
                         <div className="bg-black/60 border-[0.2vmin] border-white/20 p-[1.5vmin] w-[22vmin] min-w-[130px] text-[min(1vmin,10px)] uppercase">
                             <div className="mb-3 flex flex-col gap-2">
                                 <label className="text-white/50">Altitude</label>
-                                <input type="range" min="0" max={TOTAL_STEPS} step="0.01" onChange={(e) => updateTarget(parseFloat(e.target.value))} className="w-full h-[0.6vmin] appearance-none bg-white/10 cursor-pointer" />
+                                <input type="range" min="0" max={TOTAL_STEPS} step="0.01" value={sliderValue} onChange={(e) => updateTarget(parseFloat(e.target.value))} className="w-full h-[0.6vmin] appearance-none bg-white/10 cursor-pointer" />
                             </div>
                             <div className="flex flex-col gap-2">
                                 <label className="text-white/50">Time</label>
