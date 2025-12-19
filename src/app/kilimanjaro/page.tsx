@@ -21,11 +21,12 @@ const PATH_WAYPOINTS = [
 
 export default function MountainTracker() {
     const getKiliHour = () => {
-        return parseInt(new Intl.DateTimeFormat('en-GB', {
+        const h = parseInt(new Intl.DateTimeFormat('en-GB', {
             hour: 'numeric',
             hourCycle: 'h23',
             timeZone: 'Africa/Dar_es_Salaam'
         }).format(new Date()));
+        return h;
     };
 
     const [displaySteps, setDisplaySteps] = useState(0);
