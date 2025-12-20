@@ -11,6 +11,7 @@ import Globe from '@/components/pages/globe'
 import PolaroidTransition from '@/components/pages/photos/transition';
 import PolaroidDeveloping from '@/components/pages/photos/developing';
 import Clock from '@/components/ui/clock';
+import CourseProgress from '@/components/tiles/course-progress';
 
 export default function Home() {
 
@@ -189,7 +190,9 @@ export default function Home() {
               <img src="/assets/kili.png" alt="Kilimanjaro landscape"  className="w-full h-full rounded-md" />
             </Link>
           </Card>
-          <Card className="col-span-3 row-span-1" />
+          <Card className="col-span-3 row-span-1">
+            <CourseProgress />
+          </Card>
           
           <Card 
             className="col-span-3 row-span-1 flex flex-row justify-center items-center h-full gap-4 cursor-pointer"
