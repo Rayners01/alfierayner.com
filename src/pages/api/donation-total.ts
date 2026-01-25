@@ -1,4 +1,33 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { promises as fs } from 'fs';
+import path from 'path';
+
+type Data = {
+  total?: number;
+  updated?: string;
+  error?: string;
+};
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<Data>
+) {
+  try {
+    const filePath = path.join(process.cwd(), 'data', 'donation-total.json');
+    const fileContents = await fs.readFile(filePath, 'utf-8');
+    const data = JSON.parse(fileContents);
+
+    return res.status(200).json(data);
+  } catch (error) {
+    return res.status(500).json({ error: 'Could not read donation total' });
+  }
+}
+
+/*
+
+OLD ONE - FETCHES EVERY TIME PAGE LOADS, STOPPED WORKING DUE TO VERCEL SECURITY
+
+import type { NextApiRequest, NextApiResponse } from 'next';
 
 // Define the response type for better type safety
 type Data = {
@@ -46,4 +75,4 @@ export default async function handler(
     const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
     return res.status(500).json({ error: errorMessage });
   }
-}
+}*/

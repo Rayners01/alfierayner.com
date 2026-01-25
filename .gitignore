@@ -43,3 +43,5 @@ next-env.d.ts
 /.old-deprecated/
 
 getToken.js
+
+/data
