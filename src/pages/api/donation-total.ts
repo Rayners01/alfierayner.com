@@ -17,7 +17,10 @@ export default async function handler(
       next: { revalidate: 60 } 
     });
     
-    if (!response.ok) throw new Error('Failed to fetch page');
+    if (!response.ok) {
+      const body = await response.text();
+      throw new Error(`Failed to fetch page: ${response.status} ${response.statusText} - ${body}`);
+    }
     
     const html = await response.text();
     const nextDataMatch = html.match(/<script id="__NEXT_DATA__" type="application\/json">([\s\S]*?)<\/script>/);
