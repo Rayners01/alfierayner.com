@@ -1,12 +1,24 @@
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-core');
 const fs = require('fs');
 const path = require('path');
 
 const URL = 'https://givestar.io/gs/alfie-rayner/';
 const OUTPUT = path.join(__dirname, 'data', 'donation-total.json');
 
+function getChromePath() {
+  switch (process.platform) {
+    case 'darwin':
+      return '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+    case 'linux':
+      return '/snap/bin/chromium';
+    default:
+      throw new Error('Unsupported platform');
+  }
+}
+
 (async () => {
   const browser = await puppeteer.launch({
+    executablePath: getChromePath(),
     headless: true,
     args: [
       '--no-sandbox',
