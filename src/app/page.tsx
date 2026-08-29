@@ -202,9 +202,9 @@ export default function Home() {
             <Image src="/assets/polaroid.svg" alt="Polaroid camera" width="30" height="30" />
           </Card>
 
-          <Card className="col-span-3 row-span-1" padded={false}>
+          <Card className="col-span-3 row-span-1 bg-white flex justify-center items-center" padded={false}>
             <Link href="https://firstchair.alfierayner.com">
-              <img src="/assets/first_chair.png" alt="First Chair" className="w-full h-full rounded-md" />
+              <img src="/assets/first_chair.png" alt="First Chair" className="w-[90%] h-full object-contain mx-auto rounded-md" />
             </Link>
           </Card>
           
