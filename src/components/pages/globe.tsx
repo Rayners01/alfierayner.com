@@ -31,7 +31,7 @@ interface GlobeComponentProps {
 const visitedCountryCodes = new Set([
   'US','BB','LC','AG','GB','FR','ES','IT','VA','CH','BE',
   'NL','LU','AT','DE','CZ','PL','HU','HR','GR','CY','ZA',
-  'BW','ZW','ZM'
+  'BW','ZW','ZM', 'TZ', 'KE', 'QA'
 ]);
 
 const GlobeComponent: React.FC<GlobeComponentProps> = ({ goBack }) => {

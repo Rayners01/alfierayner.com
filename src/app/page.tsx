@@ -148,7 +148,7 @@ export default function Home() {
               <li>Data Science</li>
             </ul>
             <p className="mb-4">I primarily code in Java and JavaScript, however I also have experience using Python, C and C#.</p>
-            <p>Beyond programming, I&lsquo;m passionate about music, travelling, playing the piano, football and photography.</p>
+            <p>Beyond programming, I&lsquo;m passionate about playing the piano, polo, football, photography and travelling.</p>
           </Card>
           
           <Card className="col-span-3 row-span-4">
@@ -202,7 +202,11 @@ export default function Home() {
             <Image src="/assets/polaroid.svg" alt="Polaroid camera" width="30" height="30" />
           </Card>
 
-          <Card className="col-span-3 row-span-1" />
+          <Card className="col-span-3 row-span-1" padded={false}>
+            <Link href="https://firstchair.alfierayner.com">
+              <img src="/assets/first_chair.png" alt="First Chair" className="w-full h-full rounded-md" />
+            </Link>
+          </Card>
           
           <Card className="col-span-3 row-span-1 text-sm">
             <p>&copy; 2025 Alfie Rayner</p>
