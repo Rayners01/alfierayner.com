@@ -17,6 +17,14 @@ export const socials: Social[] = [
   },
 ];
 
+export const cv = {
+  label: "CV",
+  /** Lives in `public/`, so this path is relative to the site root. */
+  href: "/assets/alfie-rayner-cv.pdf",
+  /** The name the browser saves the file under. */
+  filename: "Alfie Rayner CV.pdf",
+} as const;
+
 export const profile = {
   name: "Alfie Rayner",
   greeting: "welcome",

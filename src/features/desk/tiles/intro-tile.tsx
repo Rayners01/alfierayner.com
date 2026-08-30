@@ -1,7 +1,8 @@
 import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import { ButtonLink } from "@/components/ui/button";
-import { profile, socials } from "@/content/profile";
+import { DownloadIcon } from "@/components/icons/download-icon";
+import { cv, profile, socials } from "@/content/profile";
 import { cn } from "@/lib/cn";
 
 export function IntroTile({ className }: { className?: string }) {
@@ -22,7 +23,7 @@ export function IntroTile({ className }: { className?: string }) {
             <ButtonLink
               key={social.label}
               href={social.href}
-              className="w-1/5 max-md:w-1/3"
+              className="w-1/5 max-md:w-auto max-md:flex-1"
             >
               <Image
                 src={social.icon}
@@ -32,6 +33,17 @@ export function IntroTile({ className }: { className?: string }) {
               />
             </ButtonLink>
           ))}
+
+          {/* `download` names the saved file; it only works because the PDF is
+              served from our own origin. */}
+          <ButtonLink
+            href={cv.href}
+            download={cv.filename}
+            className="w-1/5 gap-1.5 text-sm font-semibold max-md:w-auto max-md:flex-1"
+          >
+            <DownloadIcon className="h-4 w-4" />
+            {cv.label}
+          </ButtonLink>
         </div>
       </div>
 
