@@ -1,9 +1,7 @@
 import type { Metadata, Viewport } from "next";
-import { Montserrat } from "next/font/google";
 import { site } from "@/content/site";
+import { montserrat } from "@/lib/fonts";
 import "./globals.css";
-
-const montserrat = Montserrat({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),

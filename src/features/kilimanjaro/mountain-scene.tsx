@@ -5,14 +5,12 @@
    would fight both, and these are already sized pixel-art PNGs. */
 
 import { useEffect, useState } from "react";
-import { Press_Start_2P } from "next/font/google";
 import { kilimanjaro } from "@/content/kilimanjaro";
+import { pixel } from "@/lib/fonts";
 import { ClimbHud } from "./climb-hud";
 import { DebugPanel } from "./debug-panel";
 import { useClimb } from "./use-climb";
 import { frameForHour, useMountainHour } from "./use-mountain-hour";
-
-const pixelFont = Press_Start_2P({ subsets: ["latin"], weight: "400" });
 
 /** A 16:9 window onto the mountain, letterboxed into whatever space it gets. */
 const VIEWPORT =
@@ -74,7 +72,7 @@ export function MountainScene() {
 
   return (
     <main
-      className={`fixed inset-0 flex items-center justify-center overflow-hidden bg-neutral-950 p-4 text-white ${pixelFont.className}`}
+      className={`fixed inset-0 flex items-center justify-center overflow-hidden bg-neutral-950 p-4 text-white ${pixel.className}`}
     >
       <div className={VIEWPORT}>
         {previousFrame !== null && (

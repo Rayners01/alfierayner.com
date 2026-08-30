@@ -6,15 +6,11 @@ import { cn } from "@/lib/cn";
 
 type Props = {
   project: Project;
-  /** Grid placement. */
   className?: string;
-  /** Applied to the link filling the tile — use for padding around a logo. */
   frameClassName?: string;
-  /** Applied to the image — use to pick an `object-fit`. */
   imageClassName?: string;
 };
 
-/** A tile that is nothing but a clickable piece of artwork. */
 export function ProjectTile({
   project,
   className,

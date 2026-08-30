@@ -7,13 +7,6 @@ import { PolaroidDeveloping } from "@/features/photos/polaroid-developing";
 import { DeskGrid } from "./desk-grid";
 import { useFlyAway } from "./use-fly-away";
 
-/**
- * The desk and the two places you can leave it for.
- *
- * `globe` is reached by flying the plane off the travel tile; `camera` and
- * `photos` are the two halves of the polaroid sequence behind the photo
- * library tile. Only one view is mounted at a time.
- */
 type View = "desk" | "globe" | "camera" | "photos";
 
 export function Desk() {

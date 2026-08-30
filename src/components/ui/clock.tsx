@@ -1,9 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Lora } from "next/font/google";
-
-const lora = Lora({ subsets: ["latin"] });
+import { lora } from "@/lib/fonts";
 
 const TIME_ZONE = "Europe/London";
 

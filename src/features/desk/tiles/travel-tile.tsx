@@ -8,38 +8,24 @@ import { LAUNCH_MS, type Vector } from "@/features/desk/use-fly-away";
 import { animate, easeIn, prefersReducedMotion } from "@/lib/animation";
 import { cn } from "@/lib/cn";
 
-/** Radius of the plane's orbit, as a fraction of the tile. */
 const ORBIT_RADIUS = 0.3;
-/** Time for one lap of the map. */
 const ORBIT_PERIOD_MS = 10_500;
 
-/** Flight distance, as a multiple of the viewport diagonal. */
 const FLIGHT_TRAVEL = 0.85;
-/** How small the plane gets as it flies away. */
 const FLIGHT_SCALE = 0.35;
-/** Fraction of the flight after which the plane starts fading out. */
 const FADE_FROM = 0.55;
 
 type Props = {
   className?: string;
-  /** Called with the flight direction as the plane leaves the tile. */
   onLaunch: (direction: Vector) => void;
 };
 
-/**
- * A world map with a plane circling it. Clicking the tile sends the plane
- * across the page and the desk sliding the other way, handing over to the
- * globe once both have cleared the viewport.
- */
 export function TravelTile({ className, onLaunch }: Props) {
   const mapRef = useRef<HTMLDivElement>(null);
-  /** Positions the plane; the inner node orients it. */
   const planeRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
   const [launched, setLaunched] = useState(false);
 
-  // Animation state lives in refs and is written straight to the DOM. At 60fps
-  // a state update per frame would re-render the whole desk.
   const heading = useRef(0);
   const launchedRef = useRef(false);
   const cancel = useRef<(() => void) | null>(null);
@@ -50,8 +36,6 @@ export function TravelTile({ className, onLaunch }: Props) {
     }
   }, []);
 
-  // Orbit the map until launch. Driven by elapsed time, so the lap takes the
-  // same 10.5s regardless of refresh rate.
   useEffect(() => {
     if (prefersReducedMotion()) return;
 
@@ -67,7 +51,6 @@ export function TravelTile({ className, onLaunch }: Props) {
         mapRef.current.style.backgroundPosition = `${x * 100}% ${y * 100}%`;
       }
 
-      // The nose follows the tangent of the orbit.
       heading.current = (angle + Math.PI / 2) * (180 / Math.PI);
       orient(heading.current);
     });
@@ -109,8 +92,6 @@ export function TravelTile({ className, onLaunch }: Props) {
         const y = from.y + direction.y * distance * eased;
         node.style.transform = `translate3d(${x}px, ${y}px, 0)`;
 
-        // Shrinking into the distance, then fading so the handover to the
-        // globe is not a hard cut.
         orient(heading.current, 1 - (1 - FLIGHT_SCALE) * eased);
         node.style.opacity = `${
           progress < FADE_FROM ? 1 : 1 - (progress - FADE_FROM) / (1 - FADE_FROM)

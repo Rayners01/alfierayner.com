@@ -1,44 +1,76 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { PhotoLibrary } from "./photo-library";
+import { FRAME_PADDING, frameSize } from "./frame";
+import { useViewportSize } from "./use-viewport-size";
 
-/** Shared padding so the developing film and the library sit in the same frame. */
-const FILM_FRAME = "rounded-lg bg-white pt-8 pr-8 pb-24 pl-8 shadow-lg";
+const DEVELOPED_AT_MS = 2200;
 
-/** The ejected film shakes itself dry, fading from black into the library. */
+/**
+ * Film shakes and the image emerges.
+ */
 export function PolaroidDeveloping({ onClose }: { onClose: () => void }) {
   const [developing, setDeveloping] = useState(false);
+  const [developed, setDeveloped] = useState(false);
+  const viewport = useViewportSize();
+  const reduceMotion = useReducedMotion();
 
   useEffect(() => {
-    const timer = setTimeout(() => setDeveloping(true), 300);
-    return () => clearTimeout(timer);
-  }, []);
+    if (reduceMotion === null) return;
+
+    if (reduceMotion) {
+      setDeveloping(true);
+      setDeveloped(true);
+      return;
+    }
+
+    const start = setTimeout(() => setDeveloping(true), 300);
+    const done = setTimeout(() => setDeveloped(true), DEVELOPED_AT_MS);
+    return () => {
+      clearTimeout(start);
+      clearTimeout(done);
+    };
+  }, [reduceMotion]);
+
+  if (!viewport) return null;
+
+  const frame = frameSize(viewport);
 
   return (
     <div className="relative flex h-screen items-center justify-center overflow-hidden">
       <motion.div
         initial={{ rotate: 0 }}
-        animate={{ rotate: developing ? [0, -5, 5, -3, 3, 0] : 0 }}
-        transition={{ rotate: { repeat: developing ? 3 : 0, duration: 0.4 } }}
-        className={`relative h-[90dvh] w-160 ${FILM_FRAME}`}
+        animate={{ rotate: developing ? [0, -4, 4, -2.5, 2.5, 0] : 0 }}
+        transition={{ rotate: { repeat: 2, duration: 0.45, ease: "easeInOut" } }}
+        className="relative rounded-lg bg-white shadow-2xl"
+        style={{
+          width: frame.width,
+          height: frame.height,
+          paddingTop: FRAME_PADDING.top,
+          paddingLeft: FRAME_PADDING.side,
+          paddingRight: FRAME_PADDING.side,
+          paddingBottom: FRAME_PADDING.bottom,
+        }}
       >
-        <motion.div
-          initial={{ opacity: 1 }}
-          animate={{ opacity: developing ? 0 : 1 }}
-          transition={{ delay: 0.5, duration: 1 }}
-          className="h-full w-full bg-black"
-        />
+        <div className="relative h-full w-full overflow-hidden">
+          <PhotoLibrary onClose={onClose} interactive={developed} />
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: developing ? 1 : 0 }}
-          transition={{ delay: 1, duration: 2 }}
-          className={`absolute inset-0 flex flex-col overflow-hidden ${FILM_FRAME}`}
-        >
-          <PhotoLibrary onClose={onClose} />
-        </motion.div>
+          <motion.div
+            initial={{ opacity: 1 }}
+            animate={{ opacity: developing ? 0 : 1 }}
+            transition={{ delay: 0.9, duration: 1.6, ease: "easeOut" }}
+            className="pointer-events-none absolute inset-0 bg-amber-100/70 mix-blend-screen"
+          />
+
+          <motion.div
+            initial={{ opacity: 1 }}
+            animate={{ opacity: developing ? 0 : 1 }}
+            transition={{ delay: 0.4, duration: 1.4, ease: "easeInOut" }}
+            className="pointer-events-none absolute inset-0 bg-black"
+          />
+        </div>
       </motion.div>
     </div>
   );

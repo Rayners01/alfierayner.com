@@ -15,16 +15,11 @@ import { ProjectTile } from "./tiles/project-tile";
 import { TravelTile } from "./tiles/travel-tile";
 
 type Props = {
-  /** Attaches the node that `useFlyAway` animates. */
   deskRef: RefCallback<HTMLDivElement>;
   onLaunch: (direction: Vector) => void;
   onOpenPhotos: () => void;
 };
 
-/**
- * The 12x8 tile grid. Tiles flow in source order, so the spans below are the
- * layout — reordering this list reorders the page.
- */
 export function DeskGrid({ deskRef, onLaunch, onOpenPhotos }: Props) {
   return (
     <div

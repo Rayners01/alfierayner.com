@@ -1,44 +1,116 @@
 "use client";
 
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { useViewportHeight } from "./use-viewport-height";
+import { useEffect, useRef, useState } from "react";
+import { motion, useReducedMotion, type Variants } from "framer-motion";
+import { FILM_SCALE, FRAME_PADDING, frameSize } from "./frame";
+import { useViewportSize } from "./use-viewport-size";
 
-/** Fraction of the viewport the developed photo eventually fills. */
-const FILM_VIEWPORT_FRACTION = 0.9;
-/** How much smaller the film is before it scales up to fill the screen. */
-const FILM_SCALE = 4;
-/** Resting offset of the camera body, in pixels. */
+/** Resting offset of the camera body, in pixels above centre. */
 const CAMERA_Y = -100;
+/**
+ * Offset that leaves the film sitting in the camera's output slot.
+ */
+const SLOT_Y = -120;
 
-type Stage = "arriving" | "flashed" | "ejected" | "centred";
+type Stage = "arrive" | "flash" | "eject" | "expand";
 
 /**
- * The camera drops in, fires a flash, spits out a film, and the film grows to
- * fill the screen — at which point `onComplete` hands over to the developing
- * view. Each stage is driven by the previous stage's animation finishing.
+ * When each stage begins, in milliseconds from mount.
  */
+const SEQUENCE: { at: number; stage: Stage }[] = [
+  { at: 1000, stage: "flash" },
+  { at: 1500, stage: "eject" },
+  { at: 2700, stage: "expand" },
+];
+const COMPLETE_AT = 3600;
+
+const SETTLE = [0.22, 1, 0.36, 1] as const;
+
+/**
+ * Every variant declares every value it touches.
+ */
+const cameraVariants: Variants = {
+  arrive: {
+    y: CAMERA_Y,
+    opacity: 1,
+    rotate: 0,
+    transition: { duration: 1, ease: SETTLE },
+  },
+  // Recoil on the shutter
+  flash: {
+    y: CAMERA_Y - 12,
+    opacity: 1,
+    rotate: -1.5,
+    transition: { duration: 0.16, ease: "easeOut" },
+  },
+  eject: {
+    y: CAMERA_Y,
+    opacity: 1,
+    rotate: 0,
+    transition: { duration: 0.5, ease: SETTLE },
+  },
+  expand: {
+    y: CAMERA_Y - 260,
+    opacity: 0,
+    rotate: -6,
+    transition: { duration: 0.5, ease: "easeIn" },
+  },
+};
+
 export function PolaroidCamera({ onComplete }: { onComplete: () => void }) {
-  const [stage, setStage] = useState<Stage>("arriving");
-  const [flash, setFlash] = useState(false);
-  const viewportHeight = useViewportHeight();
+  const [stage, setStage] = useState<Stage>("arrive");
+  const viewport = useViewportSize();
+  const reduceMotion = useReducedMotion();
 
-  // Measured rather than assumed, because the film's travel is expressed in
-  // pixels for Framer Motion.
-  if (viewportHeight === null) return null;
+  const finish = useRef(onComplete);
+  finish.current = onComplete;
 
-  const filmHeight = Math.ceil(viewportHeight * FILM_VIEWPORT_FRACTION) / FILM_SCALE;
-  const ejectedY = -120 - filmHeight / 2;
-  const ejected = stage === "ejected" || stage === "centred";
+  useEffect(() => {
+    if (reduceMotion === null) return;
+
+    if (reduceMotion) {
+      finish.current();
+      return;
+    }
+
+    const timers = SEQUENCE.map(({ at, stage: next }) =>
+      setTimeout(() => setStage(next), at),
+    );
+    timers.push(setTimeout(() => finish.current(), COMPLETE_AT));
+
+    return () => timers.forEach(clearTimeout);
+  }, [reduceMotion]);
+
+  useEffect(() => {
+    const skip = () => finish.current();
+    window.addEventListener("keydown", skip);
+    window.addEventListener("pointerdown", skip);
+    return () => {
+      window.removeEventListener("keydown", skip);
+      window.removeEventListener("pointerdown", skip);
+    };
+  }, []);
+
+  if (!viewport) return null;
+
+  const frame = frameSize(viewport);
+  const filmHeight = frame.height / FILM_SCALE;
+  const filmWidth = frame.width / FILM_SCALE;
+
+  const tuckedY = CAMERA_Y - filmHeight;
+  const centredY = SLOT_Y - filmHeight / 2;
+
+  const filmY =
+    stage === "expand" ? centredY : stage === "eject" ? SLOT_Y : tuckedY;
 
   return (
     <div className="relative flex h-screen items-center justify-center overflow-hidden">
-      {flash && (
+      {stage === "flash" && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: [0, 1, 0] }}
-          transition={{ duration: 0.4 }}
-          className="absolute inset-0 z-20 bg-white"
+          transition={{ duration: 0.45, times: [0, 0.12, 1] }}
+          className="pointer-events-none absolute inset-0 z-20 bg-white"
         />
       )}
 
@@ -46,49 +118,37 @@ export function PolaroidCamera({ onComplete }: { onComplete: () => void }) {
         <motion.img
           src="/assets/polaroid.svg"
           alt="Polaroid camera"
-          initial={{ y: -300, opacity: 0 }}
-          animate={{ y: CAMERA_Y, opacity: ejected ? 0 : 1 }}
-          transition={{
-            y: { duration: 1 },
-            opacity: { duration: ejected ? 0.5 : 1 },
-          }}
-          onAnimationComplete={() => {
-            if (stage !== "arriving") return;
-            setStage("flashed");
-            setTimeout(() => setFlash(true), 300);
-          }}
+          initial={{ y: -320, opacity: 0, rotate: -6 }}
+          animate={stage}
+          variants={cameraVariants}
           className="relative z-10 w-full"
         />
 
-        {stage !== "arriving" && (
-          <motion.div
-            initial={{ y: -300 }}
-            animate={{
-              y: ejected ? ejectedY : -50,
-              scale: stage === "centred" ? FILM_SCALE : 1,
-            }}
-            transition={{
-              y: {
-                delay: ejected ? 0 : 1,
-                duration: ejected ? 1.2 : 1,
-                ease: ejected ? "easeInOut" : "easeOut",
-              },
-              scale: {
-                duration: stage === "centred" ? 1.2 : 0,
-                ease: "easeInOut",
-              },
-            }}
-            onAnimationComplete={() => {
-              if (stage === "flashed") setTimeout(() => setStage("ejected"), 500);
-              else if (stage === "ejected") setTimeout(() => setStage("centred"), 200);
-              else setTimeout(onComplete, 500);
-            }}
-            className="absolute right-0 left-0 z-0 mx-auto flex w-40 items-center justify-center rounded-xs bg-white pt-2 pr-2 pb-6 pl-2 shadow-lg"
-            style={{ height: filmHeight, transformOrigin: "center center" }}
-          >
-            <div className="h-full w-full bg-black" />
-          </motion.div>
-        )}
+        <motion.div
+          initial={{ y: tuckedY, opacity: 0 }}
+          animate={{
+            y: filmY,
+            opacity: stage === "arrive" || stage === "flash" ? 0 : 1,
+            scale: stage === "expand" ? FILM_SCALE : 1,
+          }}
+          transition={{
+            y: { duration: stage === "expand" ? 0.9 : 1.1, ease: SETTLE },
+            opacity: { duration: 0.3, ease: "easeOut" },
+            scale: { duration: 0.9, ease: [0.65, 0, 0.35, 1] },
+          }}
+          className="absolute right-0 left-0 z-0 mx-auto rounded-xs bg-white shadow-lg"
+          style={{
+            width: filmWidth,
+            height: filmHeight,
+            paddingTop: FRAME_PADDING.top / FILM_SCALE,
+            paddingLeft: FRAME_PADDING.side / FILM_SCALE,
+            paddingRight: FRAME_PADDING.side / FILM_SCALE,
+            paddingBottom: FRAME_PADDING.bottom / FILM_SCALE,
+            transformOrigin: "center center",
+          }}
+        >
+          <div className="h-full w-full bg-black" />
+        </motion.div>
       </div>
     </div>
   );
