@@ -1,125 +1,153 @@
-const client_id = process.env.SPOTIFY_CLIENT_ID!;
-const client_secret = process.env.SPOTIFY_CLIENT_SECRET!;
-const refresh_token = process.env.SPOTIFY_REFRESH_TOKEN!;
+import "server-only";
+import type { NowPlaying } from "./spotify.types";
 
-const basic = Buffer.from(`${client_id}:${client_secret}`).toString('base64');
+export type { NowPlaying };
 
-const TOKEN_ENDPOINT = 'https://accounts.spotify.com/api/token';
-const NOW_PLAYING_ENDPOINT = 'https://api.spotify.com/v1/me/player/currently-playing';
-const RECENTLY_PLAYED_ENDPOINT = 'https://api.spotify.com/v1/me/player/recently-played?limit=1';
+const TOKEN_ENDPOINT = "https://accounts.spotify.com/api/token";
+const NOW_PLAYING_ENDPOINT =
+  "https://api.spotify.com/v1/me/player/currently-playing";
+const RECENTLY_PLAYED_ENDPOINT =
+  "https://api.spotify.com/v1/me/player/recently-played?limit=1";
 
-interface Artist {
+type SpotifyTrack = {
   name: string;
-}
-
-interface AlbumImage {
-  url: string;
-}
-
-interface Album {
-  name: string;
-  images: AlbumImage[];
-}
-
-interface Track {
-  name: string;
-  artists: Artist[];
-  album: Album;
+  artists: { name: string }[];
+  album: { name: string; images: { url: string }[] };
   external_urls: { spotify: string };
-}
-
-interface CurrentlyPlayingTrack extends Track {
   duration_ms: number;
-}
+};
 
-interface CurrentlyPlayingResponse {
+type CurrentlyPlayingResponse = {
   is_playing: boolean;
-  item: CurrentlyPlayingTrack;
+  item: SpotifyTrack | null;
   progress_ms: number;
+};
+
+type RecentlyPlayedResponse = {
+  items: { track: SpotifyTrack }[];
+};
+
+function credentials() {
+  const clientId = process.env.SPOTIFY_CLIENT_ID;
+  const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
+  const refreshToken = process.env.SPOTIFY_REFRESH_TOKEN;
+
+  if (!clientId || !clientSecret || !refreshToken) {
+    throw new Error(
+      "Missing Spotify credentials. See .env.example for the required variables.",
+    );
+  }
+
+  return { clientId, clientSecret, refreshToken };
 }
 
-interface RecentlyPlayedItem {
-  track: Track;
-}
+/**
+ * Access tokens last an hour, so cache one in module scope. Without this every
+ * poll from every visitor costs an extra round trip to Spotify's token
+ * endpoint. Refreshed a minute early to avoid racing the expiry.
+ */
+let cachedToken: { value: string; expiresAt: number } | null = null;
 
-interface RecentlyPlayedResponse {
-  items: RecentlyPlayedItem[];
-}
+async function getAccessToken(): Promise<string> {
+  if (cachedToken && Date.now() < cachedToken.expiresAt) {
+    return cachedToken.value;
+  }
 
+  const { clientId, clientSecret, refreshToken } = credentials();
+  const basic = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
 
-
-export const getAccessToken = async () => {
   const res = await fetch(TOKEN_ENDPOINT, {
-    method: 'POST',
+    method: "POST",
     headers: {
-    'Content-Type': 'application/x-www-form-urlencoded',
-    'Authorization': 'Basic ' + basic
+      "Content-Type": "application/x-www-form-urlencoded",
+      Authorization: `Basic ${basic}`,
     },
     body: new URLSearchParams({
-      grant_type: 'refresh_token',
-      refresh_token: refresh_token
-    })
+      grant_type: "refresh_token",
+      refresh_token: refreshToken,
+    }),
+    cache: "no-store",
   });
 
-  return res.json();
-};
+  if (!res.ok) {
+    throw new Error(`Spotify token request failed: ${res.status}`);
+  }
 
-export const getNowPlaying = async () => {
-  const access = await getAccessToken();
+  const { access_token, expires_in } = (await res.json()) as {
+    access_token?: string;
+    expires_in?: number;
+  };
 
-  const access_token = access.access_token;
+  if (!access_token) {
+    throw new Error("Spotify token response contained no access token");
+  }
 
+  cachedToken = {
+    value: access_token,
+    expiresAt: Date.now() + ((expires_in ?? 3600) - 60) * 1000,
+  };
+
+  return access_token;
+}
+
+function toNowPlaying(
+  track: SpotifyTrack,
+  { isPlaying, progressMs }: { isPlaying: boolean; progressMs: number },
+): NowPlaying {
+  return {
+    isPlaying,
+    title: track.name,
+    artist: track.artists.map((artist) => artist.name).join(", "),
+    album: track.album.name,
+    albumArtUrl: track.album.images[0]?.url ?? "",
+    trackUrl: track.external_urls.spotify,
+    progressMs,
+    durationMs: track.duration_ms,
+  };
+}
+
+/**
+ * What I'm listening to, falling back to the last track I played.
+ *
+ * Returns `null` rather than throwing or leaking an error payload — this value
+ * is serialised straight to the browser, so it must never carry token or
+ * diagnostic data.
+ */
+export async function getNowPlaying(): Promise<NowPlaying | null> {
   try {
-    const currentlyPlayingRes = await fetch(NOW_PLAYING_ENDPOINT, {
-      headers: {
-        Authorization: `Bearer ${access_token}`
-      }
+    const accessToken = await getAccessToken();
+    const auth = { Authorization: `Bearer ${accessToken}` };
+
+    const current = await fetch(NOW_PLAYING_ENDPOINT, {
+      headers: auth,
+      cache: "no-store",
     });
 
-    if (currentlyPlayingRes.status === 204 || currentlyPlayingRes.status > 400) {
-      // fallback to recently played
-      const recentRes = await fetch(RECENTLY_PLAYED_ENDPOINT, {
-        headers: {
-          Authorization: `Bearer ${access_token}`
-        }
-      });
-
-      const recentData: RecentlyPlayedResponse = await recentRes.json();
-      if (!recentData.items) {
-        return {};
+    // 204 means nothing is playing; anything >= 400 means we cannot tell.
+    if (current.ok && current.status !== 204) {
+      const data = (await current.json()) as CurrentlyPlayingResponse;
+      if (data?.item) {
+        return toNowPlaying(data.item, {
+          isPlaying: data.is_playing,
+          progressMs: data.progress_ms,
+        });
       }
-      const song = recentData.items[0].track;
-
-      return {
-        isPlaying: false,
-        title: song.name,
-        artist: song.artists.map(artist => artist.name).join(', '),
-        album: song.album.name,
-        albumImageUrl: song.album.images[0].url,
-        songUrl: song.external_urls.spotify,
-        progress: 0,
-        duration: 0
-      };
     }
 
-    const song: CurrentlyPlayingResponse = await currentlyPlayingRes.json();
+    const recent = await fetch(RECENTLY_PLAYED_ENDPOINT, {
+      headers: auth,
+      cache: "no-store",
+    });
 
-    if (!song) {
-      return {};
-    }
+    if (!recent.ok) return null;
 
-    return {
-      isPlaying: song.is_playing,
-      title: song.item.name,
-      artist: song.item.artists.map(artist => artist.name).join(', '),
-      album: song.item.album.name,
-      albumImageUrl: song.item.album.images[0].url,
-      songUrl: song.item.external_urls.spotify,
-      progress: song.progress_ms,
-      duration: song.item.duration_ms
-    };
-  } catch (err: unknown) {
-    console.error('Error fetching currently playing:', err);
-    return access;
+    const data = (await recent.json()) as RecentlyPlayedResponse;
+    const track = data.items?.[0]?.track;
+    if (!track) return null;
+
+    return toNowPlaying(track, { isPlaying: false, progressMs: 0 });
+  } catch (error) {
+    console.error("[spotify] failed to resolve now playing:", error);
+    return null;
   }
-};
+}

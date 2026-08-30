@@ -1,53 +1,38 @@
-'use client';
+import React from "react";
+import { cn } from "@/lib/cn";
 
-import React from 'react';
+/**
+ * Chunky offset border that presses in on click. Shared by `Button` and
+ * `ButtonLink` so both variants stay visually identical.
+ */
+const pressableSurface = cn(
+  "flex items-center justify-center rounded-lg",
+  "border-t-2 border-l-2 border-b-4 border-r-4 border-frame",
+  "bg-surface text-frame",
+  "hover:border-accent",
+  "active:translate-x-[2px] active:translate-y-[2px] active:border-r-2 active:border-b-2",
+  "disabled:pointer-events-none disabled:opacity-50",
+);
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  width?: string | number;
-  height?: string | number;
-  link?: string;
+export function Button({
+  className,
+  ...props
+}: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  return <button className={cn(pressableSurface, className)} {...props} />;
 }
 
-export default function Button({
-  children,
-  className = '',
-  width,
-  height,
-  link,
-  onClick,
+/** A `Button` that navigates. Renders an anchor so middle-click and
+ *  open-in-new-tab behave the way people expect. */
+export function ButtonLink({
+  className,
   ...props
-}: ButtonProps) {
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (onClick) {
-      onClick(e); // run the provided onClick
-    } else if (link) {
-      // slight delay to show click animation
-      setTimeout(() => {
-        window.open(link, '_blank'); // opens link in new tab
-      }, 150);
-    }
-  };
-
+}: React.AnchorHTMLAttributes<HTMLAnchorElement>) {
   return (
-    <button
-      className={`
-        rounded-lg 
-        w-${width ? width : '1/2'}
-        h-${height ? height : 'full'}
-        border-t-2 border-l-2 border-b-4 border-r-4 
-        border-green-700 
-        text-green-700
-        bg-lime-200
-        flex justify-center items-center 
-        hover:border-yellow-400
-        active:translate-x-[2px] active:translate-y-[2px] 
-        active:border-b-2 active:border-r-2
-        ${className}
-      `}
-      onClick={handleClick}
+    <a
+      className={cn(pressableSurface, className)}
+      target="_blank"
+      rel="noopener noreferrer"
       {...props}
-    >
-      {children}
-    </button>
+    />
   );
 }

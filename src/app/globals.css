@@ -1,5 +1,49 @@
 @import "tailwindcss";
 
-body {
-  background-image: url('/assets/tortoise-shell.svg');
+/* --------------------------------------------------------------------------
+   Design tokens
+
+   The site is built around a single "paper and ink" palette: lime tiles with
+   green borders, highlighted in yellow on hover. Naming these semantically
+   means a palette change is a six-line edit rather than a find-and-replace
+   across every component.
+   -------------------------------------------------------------------------- */
+@theme {
+  --color-frame: #15803d; /* borders and primary text */
+  --color-ink: #14532d; /* headings sitting on artwork */
+  --color-muted: #22c55e; /* labels and secondary text */
+  --color-surface: #d9f99d; /* tile fill */
+  --color-raised: #ecfccb; /* nested surface inside a tile */
+  --color-accent: #facc15; /* hover and highlight */
+}
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+}
+
+@layer components {
+  /* Chunky pixel-art range input, used by the Kilimanjaro debug controls.
+     Thumb pseudo-elements cannot be reached from utility classes. */
+  .pixel-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 1.5vmin;
+    width: 1.5vmin;
+    min-height: 14px;
+    min-width: 14px;
+    background: var(--color-accent);
+    border: 1px solid #000;
+    cursor: pointer;
+  }
+
+  .pixel-slider::-moz-range-thumb {
+    height: 1.5vmin;
+    width: 1.5vmin;
+    min-height: 14px;
+    min-width: 14px;
+    background: var(--color-accent);
+    border: 1px solid #000;
+    cursor: pointer;
+  }
 }

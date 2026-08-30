@@ -6,7 +6,10 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "fetch-donation": "node scripts/fetch-donation.mjs",
+    "spotify:token": "node --env-file=.env scripts/spotify-refresh-token.mjs"
   },
   "dependencies": {
     "framer-motion": "^12.23.22",
@@ -16,6 +19,7 @@
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-globe.gl": "^2.36.0",
+    "server-only": "^0.0.1",
     "three": "^0.180.0"
   },
   "devDependencies": {

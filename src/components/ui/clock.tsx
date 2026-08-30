@@ -1,51 +1,60 @@
-'use client';
+"use client";
 
-import { Lora } from 'next/font/google';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from "react";
+import { Lora } from "next/font/google";
 
-const lora = Lora({
-  subsets: ['latin']
-})
+const lora = Lora({ subsets: ["latin"] });
 
-export default function Clock() {
-  const [time, setTime] = useState(() => new Date());
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+const TIME_ZONE = "Europe/London";
+
+function format(time: Date) {
+  const clock = time
+    .toLocaleTimeString("en-GB", {
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true,
+      timeZone: TIME_ZONE,
+    })
+    .toUpperCase();
+
+  const zone = time
+    .toLocaleTimeString("en-GB", { timeZone: TIME_ZONE, timeZoneName: "short" })
+    .split(" ")
+    .pop();
+
+  return `${clock} ${zone}`;
+}
+
+/**
+ * My local time, ticking on the minute boundary rather than every 60s from
+ * mount — otherwise the displayed minute lags by however long the page took
+ * to load.
+ */
+export function Clock() {
+  const [time, setTime] = useState<Date | null>(null);
 
   useEffect(() => {
-    const tick = () => setTime(new Date());
+    setTime(new Date());
 
-    tick();
+    let interval: ReturnType<typeof setInterval>;
+    const msUntilNextMinute = (60 - new Date().getSeconds()) * 1000;
 
-    const now = new Date();
-    const delay = (60 - now.getSeconds()) * 1000;
-
-    timeoutRef.current = setTimeout(() => {
-      tick();
-      intervalRef.current = setInterval(tick, 60_000);
-    }, delay);
+    const timeout = setTimeout(() => {
+      setTime(new Date());
+      interval = setInterval(() => setTime(new Date()), 60_000);
+    }, msUntilNextMinute);
 
     return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-      if (intervalRef.current) clearInterval(intervalRef.current);
+      clearTimeout(timeout);
+      clearInterval(interval);
     };
   }, []);
 
-  const formattedTime = time.toLocaleTimeString('en-GB', {
-    hour: 'numeric',
-    minute: 'numeric',
-    hour12: true,
-    timeZone: 'Europe/London',
-  }).toUpperCase();
-
-  const tzName = time.toLocaleTimeString('en-GB', {
-    timeZone: 'Europe/London',
-    timeZoneName: 'short',
-  }).split(' ').pop(); 
-
+  // Rendered empty on the server: the clock is client-local by definition, so
+  // any server-rendered value would be wrong and cause a hydration mismatch.
   return (
-    <p className={`text-xl ${lora.className}`}>
-      {formattedTime} {tzName}
+    <p className={`text-xl ${lora.className}`} suppressHydrationWarning>
+      {time ? format(time) : ""}
     </p>
   );
 }

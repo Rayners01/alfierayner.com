@@ -1,29 +1,28 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+import { Montserrat } from "next/font/google";
+import { site } from "@/content/site";
 import "./globals.css";
-import { Montserrat } from 'next/font/google'
 
-const montserrat = Montserrat({
-  subsets: ['latin']
-})
+const montserrat = Montserrat({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Alfie Rayner",
-  description: "Everything I'm working on!",
+  metadataBase: new URL(site.url),
+  title: site.title,
+  description: site.description,
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`bg-neutral-950 ${montserrat.className}`}>
-      <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-      </head>
-      <body>
-        {children}
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
