@@ -2,7 +2,6 @@ import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/cn";
 
-/** Opens the polaroid camera sequence that leads into the photo library. */
 export function PhotoLibraryTile({
   className,
   onOpen,

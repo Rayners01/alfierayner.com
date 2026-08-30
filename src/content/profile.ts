@@ -46,7 +46,7 @@ export const about = {
   interestsLead: "My main interests in Computer Science include:",
   interests: ["Full-stack Development", "Artificial Intelligence", "Data Science"],
   outro: [
-    "I primarily code in Java and JavaScript, however I also have experience using Python, C and C#.",
+    "I primarily code in Java, JavaScript and Python, however I also have experience using C, PHP, Haskell and Prolog.",
     "Beyond programming, I'm passionate about many things including playing the piano, polo, photography, skiing, football and travelling.",
   ],
 } as const;
