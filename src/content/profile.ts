@@ -19,9 +19,7 @@ export const socials: Social[] = [
 
 export const cv = {
   label: "CV",
-  /** Lives in `public/`, so this path is relative to the site root. */
   href: "/assets/alfie-rayner-cv.pdf",
-  /** The name the browser saves the file under. */
   filename: "Alfie Rayner CV.pdf",
 } as const;
 
@@ -42,7 +40,7 @@ export const contact = {
 
 export const about = {
   intro: [
-    "I'm a software developer from Brighton, England.",
+    "I'm a software developer from West Sussex, England.",
     "Currently, I am in my second-year of my MEng Computer Science degree at the University of Warwick.",
   ],
   interestsLead: "My main interests in Computer Science include:",
