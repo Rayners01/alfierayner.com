@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { PhotoLibrary } from "./photo-library";
-import { FRAME_PADDING, frameSize } from "./frame";
+import { framePadding, frameSize } from "./frame";
 import { useViewportSize } from "./use-viewport-size";
 
 const DEVELOPED_AT_MS = 2200;
@@ -37,6 +37,7 @@ export function PolaroidDeveloping({ onClose }: { onClose: () => void }) {
   if (!viewport) return null;
 
   const frame = frameSize(viewport);
+  const padding = framePadding(frame.width);
 
   return (
     <div className="relative flex h-screen items-center justify-center overflow-hidden">
@@ -48,10 +49,10 @@ export function PolaroidDeveloping({ onClose }: { onClose: () => void }) {
         style={{
           width: frame.width,
           height: frame.height,
-          paddingTop: FRAME_PADDING.top,
-          paddingLeft: FRAME_PADDING.side,
-          paddingRight: FRAME_PADDING.side,
-          paddingBottom: FRAME_PADDING.bottom,
+          paddingTop: padding.top,
+          paddingLeft: padding.side,
+          paddingRight: padding.side,
+          paddingBottom: padding.bottom,
         }}
       >
         <div className="relative h-full w-full overflow-hidden">

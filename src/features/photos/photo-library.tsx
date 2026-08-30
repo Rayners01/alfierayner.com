@@ -108,13 +108,13 @@ export function PhotoLibrary({ onClose, interactive = true }: Props) {
       )}
       aria-hidden={!interactive}
     >
-      <header className="flex items-center justify-between gap-2 px-4 pt-4 pb-3">
-        <h1 className="text-xl font-semibold text-ink">
+      <header className="flex items-center justify-between gap-2 px-4 pt-4 pb-3 max-md:px-3 max-md:pt-3 max-md:pb-2">
+        <h1 className="truncate text-xl font-semibold text-ink max-md:text-base">
           {expanded ? expanded.caption : "Photo Library"}
         </h1>
         <Button
           onClick={() => (expanded ? setExpandedAt(null) : onClose())}
-          className="shrink-0 px-3 py-1 text-sm"
+          className="shrink-0 px-3 py-1 text-sm max-md:px-3 max-md:py-2"
         >
           {expanded ? "Back to Library" : "Back"}
         </Button>
@@ -143,19 +143,21 @@ export function PhotoLibrary({ onClose, interactive = true }: Props) {
           </div>
 
           <div className="flex items-center gap-3">
-            <Button onClick={() => step(-1)} className="px-3 py-1 text-sm">
+            <Button onClick={() => step(-1)} className="px-3 py-1 text-sm max-md:px-4 max-md:py-2">
               Previous
             </Button>
             <p className="text-sm text-ink">
               {expandedAt! + 1} of {photos.length}
             </p>
-            <Button onClick={() => step(1)} className="px-3 py-1 text-sm">
+            <Button onClick={() => step(1)} className="px-3 py-1 text-sm max-md:px-4 max-md:py-2">
               Next
             </Button>
           </div>
         </div>
       ) : (
-        <div className="grid min-h-0 flex-1 grid-cols-3 grid-rows-2 gap-3 px-4">
+        // Three across is too narrow on a phone; two columns of three still
+        // fits a full page of six.
+        <div className="grid min-h-0 flex-1 grid-cols-3 grid-rows-2 gap-3 px-4 max-md:grid-cols-2 max-md:grid-rows-3 max-md:gap-2 max-md:px-3">
           {slots.map((photo, index) =>
             photo ? (
               <PolaroidCard
@@ -177,7 +179,7 @@ export function PhotoLibrary({ onClose, interactive = true }: Props) {
             <Button
               onClick={() => setPage((current) => current - 1)}
               disabled={page === 0}
-              className="px-3 py-1 text-sm"
+              className="px-3 py-1 text-sm max-md:px-4 max-md:py-2"
             >
               Previous
             </Button>
@@ -187,7 +189,7 @@ export function PhotoLibrary({ onClose, interactive = true }: Props) {
             <Button
               onClick={() => setPage((current) => current + 1)}
               disabled={page === TOTAL_PAGES - 1}
-              className="px-3 py-1 text-sm"
+              className="px-3 py-1 text-sm max-md:px-4 max-md:py-2"
             >
               Next
             </Button>

@@ -70,3 +70,21 @@
     cursor: pointer;
   }
 }
+
+/* --------------------------------------------------------------------------
+   Phone layout for the desk
+
+   The desk collapses to one column below 48rem. The desktop spans stay in
+   desk-grid.tsx, where they read as the layout — this only neutralises them,
+   which matters because a `col-span-9` tile in a one-column grid would
+   otherwise generate eight implicit columns rather than wrapping.
+
+   Deliberately unlayered: it has to outrank the `col-span-*` utilities, and
+   anything inside `@layer components` would lose to them.
+   -------------------------------------------------------------------------- */
+@media (width < 48rem) {
+  .desk-grid > * {
+    grid-column: span 1 / span 1;
+    grid-row: span 1 / span 1;
+  }
+}

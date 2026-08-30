@@ -53,8 +53,8 @@ export function GlobeView({ onBack }: { onBack: () => void }) {
       </Button>
 
       <div className="flex flex-col items-center">
-        <Card className="w-fit bg-raised px-6 py-4">
-          <h2 className="text-xl font-semibold text-frame">
+        <Card className="w-fit bg-raised px-6 py-4 max-md:mx-4 max-md:px-4 max-md:py-2">
+          <h2 className="text-xl font-semibold text-frame max-md:text-base">
             {travel.globeHeading}
           </h2>
         </Card>

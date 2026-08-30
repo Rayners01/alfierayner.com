@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
-import { FILM_SCALE, FRAME_PADDING, frameSize } from "./frame";
+import { FILM_SCALE, framePadding, frameSize } from "./frame";
 import { useViewportSize } from "./use-viewport-size";
 
 /** Resting offset of the camera body, in pixels above centre. */
@@ -94,6 +94,7 @@ export function PolaroidCamera({ onComplete }: { onComplete: () => void }) {
   if (!viewport) return null;
 
   const frame = frameSize(viewport);
+  const padding = framePadding(frame.width);
   const filmHeight = frame.height / FILM_SCALE;
   const filmWidth = frame.width / FILM_SCALE;
 
@@ -140,10 +141,10 @@ export function PolaroidCamera({ onComplete }: { onComplete: () => void }) {
           style={{
             width: filmWidth,
             height: filmHeight,
-            paddingTop: FRAME_PADDING.top / FILM_SCALE,
-            paddingLeft: FRAME_PADDING.side / FILM_SCALE,
-            paddingRight: FRAME_PADDING.side / FILM_SCALE,
-            paddingBottom: FRAME_PADDING.bottom / FILM_SCALE,
+            paddingTop: padding.top / FILM_SCALE,
+            paddingLeft: padding.side / FILM_SCALE,
+            paddingRight: padding.side / FILM_SCALE,
+            paddingBottom: padding.bottom / FILM_SCALE,
             transformOrigin: "center center",
           }}
         >

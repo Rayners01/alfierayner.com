@@ -24,18 +24,24 @@ export function DeskGrid({ deskRef, onLaunch, onOpenPhotos }: Props) {
   return (
     <div
       ref={deskRef}
-      className="flex h-screen transform-gpu items-center justify-center overflow-hidden text-frame will-change-[transform,opacity]"
+      className="flex h-screen transform-gpu items-center justify-center overflow-hidden text-frame will-change-[transform,opacity] max-md:h-auto max-md:min-h-dvh max-md:items-start max-md:overflow-visible"
     >
-      <div className="grid h-[90%] w-3/4 grid-cols-12 grid-rows-8 gap-4">
+      <div className="desk-grid grid h-[90%] w-3/4 grid-cols-12 grid-rows-8 gap-4 max-md:h-auto max-md:w-[92%] max-md:grid-cols-1 max-md:grid-rows-none max-md:gap-3 max-md:py-5">
         <IntroTile className="col-span-9 row-span-4" />
         <AboutTile className="col-span-3 row-span-6" />
         <ContactTile className="col-span-3 row-span-4" />
         <ClockTile className="col-span-3 row-span-1" />
-        <TravelTile className="col-span-3 row-span-1" onLaunch={onLaunch} />
+        {/* Tiles whose content is absolutely positioned or `h-full` have no
+            intrinsic height, so they need an explicit one once the phone
+            layout drops the fixed grid rows. */}
+        <TravelTile
+          className="col-span-3 row-span-1 max-md:h-28"
+          onLaunch={onLaunch}
+        />
         <NowPlayingTile className="col-span-3 row-span-2" />
         <ProjectTile
           project={projects.kilimanjaro}
-          className="col-span-3 row-span-2"
+          className="col-span-3 row-span-2 max-md:h-44"
         />
         <CourseProgressTile className="col-span-3 row-span-1" />
         <PhotoLibraryTile
@@ -44,7 +50,7 @@ export function DeskGrid({ deskRef, onLaunch, onOpenPhotos }: Props) {
         />
         <ProjectTile
           project={projects.firstChair}
-          className="col-span-3 row-span-1 bg-white"
+          className="col-span-3 row-span-1 bg-white max-md:h-24"
           frameClassName="px-[5%]"
           imageClassName="object-contain"
         />

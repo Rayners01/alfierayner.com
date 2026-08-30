@@ -17,4 +17,19 @@ export function frameSize({ width, height }: FrameSize): FrameSize {
   };
 }
 
-export const FRAME_PADDING = { top: 32, side: 32, bottom: 96 };
+/**
+ * The white border around the photo, as fractions of the frame's width.
+ *
+ * Proportional rather than fixed pixels so a phone-sized frame keeps a
+ * polaroid's proportions instead of being swallowed by a 96px lip. At the
+ * desktop maximum of 640px these resolve to the original 32 / 32 / 96.
+ */
+const PADDING_RATIO = { top: 0.05, side: 0.05, bottom: 0.15 };
+
+export function framePadding(width: number) {
+  return {
+    top: width * PADDING_RATIO.top,
+    side: width * PADDING_RATIO.side,
+    bottom: width * PADDING_RATIO.bottom,
+  };
+}
