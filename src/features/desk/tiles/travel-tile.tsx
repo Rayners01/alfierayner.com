@@ -4,114 +4,132 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Card } from "@/components/ui/card";
 import { PlaneIcon } from "@/components/icons/plane-icon";
-import type { Vector } from "@/features/desk/use-fly-away";
+import { LAUNCH_MS, type Vector } from "@/features/desk/use-fly-away";
+import { animate, easeIn, prefersReducedMotion } from "@/lib/animation";
 import { cn } from "@/lib/cn";
 
 /** Radius of the plane's orbit, as a fraction of the tile. */
 const ORBIT_RADIUS = 0.3;
-/** Radians advanced per frame while circling. */
-const ORBIT_SPEED = 0.01;
-/** Launch speed, in viewport-widths per frame. */
-const LAUNCH_SPEED = 0.005;
+/** Time for one lap of the map. */
+const ORBIT_PERIOD_MS = 10_500;
+
+/** Flight distance, as a multiple of the viewport diagonal. */
+const FLIGHT_TRAVEL = 0.85;
+/** How small the plane gets as it flies away. */
+const FLIGHT_SCALE = 0.35;
+/** Fraction of the flight after which the plane starts fading out. */
+const FADE_FROM = 0.55;
 
 type Props = {
   className?: string;
-  /** Called with the launch vector when the plane leaves the tile. */
-  onLaunch: (velocity: Vector) => void;
+  /** Called with the flight direction as the plane leaves the tile. */
+  onLaunch: (direction: Vector) => void;
 };
 
 /**
- * A world map with a plane circling it. Clicking the tile sends the plane out
- * of the tile and across the page — the desk follows it, and the globe view
- * takes over once both have cleared the viewport.
+ * A world map with a plane circling it. Clicking the tile sends the plane
+ * across the page and the desk sliding the other way, handing over to the
+ * globe once both have cleared the viewport.
  */
 export function TravelTile({ className, onLaunch }: Props) {
   const mapRef = useRef<HTMLDivElement>(null);
+  /** Positions the plane; the inner node orients it. */
   const planeRef = useRef<HTMLDivElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
   const [launched, setLaunched] = useState(false);
 
-  // Animation state lives in refs and is written straight to the DOM: at 60fps
-  // a React state update per frame would re-render the whole desk.
+  // Animation state lives in refs and is written straight to the DOM. At 60fps
+  // a state update per frame would re-render the whole desk.
   const heading = useRef(0);
-  const velocity = useRef<Vector>({ x: 0, y: 0 });
-  const flightPosition = useRef<Vector>({ x: 0, y: 0 });
   const launchedRef = useRef(false);
+  const cancel = useRef<(() => void) | null>(null);
 
+  const orient = useCallback((degrees: number, scale = 1) => {
+    if (bodyRef.current) {
+      bodyRef.current.style.transform = `translate(-50%, -50%) rotate(${degrees}deg) scale(${scale})`;
+    }
+  }, []);
+
+  // Orbit the map until launch. Driven by elapsed time, so the lap takes the
+  // same 10.5s regardless of refresh rate.
   useEffect(() => {
-    let frame: number;
-    let angle = 0;
+    if (prefersReducedMotion()) return;
 
-    const draw = () => {
-      frame = requestAnimationFrame(draw);
+    let frame = requestAnimationFrame(function step(now) {
+      frame = requestAnimationFrame(step);
+      if (launchedRef.current) return;
 
-      if (!launchedRef.current) {
-        angle += ORBIT_SPEED;
+      const angle = ((now % ORBIT_PERIOD_MS) / ORBIT_PERIOD_MS) * Math.PI * 2;
+
+      if (mapRef.current) {
         const x = 0.5 + ORBIT_RADIUS * Math.cos(angle);
         const y = 0.5 + ORBIT_RADIUS * Math.sin(angle);
-
-        if (mapRef.current) {
-          mapRef.current.style.backgroundPosition = `${x * 100}% ${y * 100}%`;
-        }
-
-        // The plane's nose follows the tangent of the orbit.
-        heading.current = (angle + Math.PI / 2) * (180 / Math.PI);
-
-        if (planeRef.current) {
-          planeRef.current.style.transform = `translate(-50%, -50%) rotate(${heading.current}deg)`;
-        }
-        return;
+        mapRef.current.style.backgroundPosition = `${x * 100}% ${y * 100}%`;
       }
 
-      flightPosition.current = {
-        x: flightPosition.current.x + velocity.current.x * window.innerWidth,
-        y: flightPosition.current.y + velocity.current.y * window.innerHeight,
-      };
+      // The nose follows the tangent of the orbit.
+      heading.current = (angle + Math.PI / 2) * (180 / Math.PI);
+      orient(heading.current);
+    });
 
-      if (planeRef.current) {
-        planeRef.current.style.left = `${flightPosition.current.x}px`;
-        planeRef.current.style.top = `${flightPosition.current.y}px`;
-      }
-    };
-
-    frame = requestAnimationFrame(draw);
     return () => cancelAnimationFrame(frame);
-  }, []);
+  }, [orient]);
+
+  useEffect(() => () => cancel.current?.(), []);
 
   const handleClick = useCallback(() => {
     if (launchedRef.current || !planeRef.current) return;
 
     const radians = (heading.current * Math.PI) / 180;
-    velocity.current = {
-      x: Math.cos(radians) * LAUNCH_SPEED,
-      y: Math.sin(radians) * LAUNCH_SPEED,
-    };
+    const direction = { x: Math.cos(radians), y: Math.sin(radians) };
+
+    launchedRef.current = true;
+    onLaunch(direction);
+
+    if (prefersReducedMotion()) return;
 
     const rect = planeRef.current.getBoundingClientRect();
-    flightPosition.current = {
+    const from = {
       x: rect.left + rect.width / 2,
       y: rect.top + rect.height / 2,
     };
+    const distance =
+      Math.hypot(window.innerWidth, window.innerHeight) * FLIGHT_TRAVEL;
 
-    launchedRef.current = true;
     setLaunched(true);
-    onLaunch(velocity.current);
-  }, [onLaunch]);
+
+    cancel.current = animate({
+      duration: LAUNCH_MS,
+      ease: easeIn,
+      onFrame: (eased, progress) => {
+        const node = planeRef.current;
+        if (!node) return;
+
+        const x = from.x + direction.x * distance * eased;
+        const y = from.y + direction.y * distance * eased;
+        node.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+
+        // Shrinking into the distance, then fading so the handover to the
+        // globe is not a hard cut.
+        orient(heading.current, 1 - (1 - FLIGHT_SCALE) * eased);
+        node.style.opacity = `${
+          progress < FADE_FROM ? 1 : 1 - (progress - FADE_FROM) / (1 - FADE_FROM)
+        }`;
+      },
+    });
+  }, [onLaunch, orient]);
 
   const plane = (
     <div
       ref={planeRef}
-      className={cn("z-50", launched ? "fixed" : "absolute top-1/2 left-1/2")}
-      style={
-        launched
-          ? {
-              left: flightPosition.current.x,
-              top: flightPosition.current.y,
-              transform: `translate(-50%, -50%) rotate(${heading.current}deg)`,
-            }
-          : undefined
-      }
+      className={cn(
+        "z-50 will-change-transform",
+        launched ? "fixed top-0 left-0" : "absolute top-1/2 left-1/2",
+      )}
     >
-      <PlaneIcon className="h-10 w-10 fill-white" />
+      <div ref={bodyRef} className="will-change-transform">
+        <PlaneIcon className="h-10 w-10 fill-white" />
+      </div>
     </div>
   );
 
@@ -130,6 +148,7 @@ export function TravelTile({ className, onLaunch }: Props) {
       <div
         ref={mapRef}
         className="absolute inset-0 rounded-md bg-[url('/assets/world-map.jpg')] bg-[length:400%] bg-no-repeat opacity-80"
+        style={{ backgroundPosition: "80% 50%" }}
       />
       {launched ? createPortal(plane, document.body) : plane}
     </Card>

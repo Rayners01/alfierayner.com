@@ -19,7 +19,7 @@ type View = "desk" | "globe" | "camera" | "photos";
 export function Desk() {
   const [view, setView] = useState<View>("desk");
 
-  const { offset, launch, recall } = useFlyAway({
+  const { deskRef, launch, recall } = useFlyAway({
     onEscape: useCallback(() => setView("globe"), []),
   });
 
@@ -32,7 +32,7 @@ export function Desk() {
     <div className="h-screen overflow-hidden bg-[url('/assets/tortoise-shell.svg')]">
       {view === "desk" && (
         <DeskGrid
-          offset={offset}
+          deskRef={deskRef}
           onLaunch={launch}
           onOpenPhotos={() => setView("camera")}
         />

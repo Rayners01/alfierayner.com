@@ -1,128 +1,131 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef } from "react";
+import {
+  animate,
+  easeIn,
+  easeOut,
+  lerp,
+  magnitude,
+  prefersReducedMotion,
+} from "@/lib/animation";
 
 export type Vector = { x: number; y: number };
 
 const ORIGIN: Vector = { x: 0, y: 0 };
 
-/** Viewport-widths travelled per frame, per unit of launch velocity. */
-const PAN_SPEED = 1.5;
+/** Travel distance, as a multiple of the viewport diagonal. */
+const TRAVEL = 1.15;
+
+export const LAUNCH_MS = 900;
+const RETURN_MS = 1100;
+
+/** Scale and fade at full travel, so the desk recedes rather than just slides. */
+const DEPTH_SCALE = 0.08;
+const DEPTH_FADE = 0.5;
 
 /**
- * Clamps a coordinate at zero once it has crossed it, so the desk settles
- * exactly on centre rather than overshooting and jittering.
- */
-function stopAtOrigin(value: number, direction: number): number {
-  if (direction > 0 && value > 0) return 0;
-  if (direction < 0 && value < 0) return 0;
-  return value;
-}
-
-type Phase = "resting" | "leaving" | "returning";
-
-/**
- * Slides the desk off-screen along a launch vector and back again.
+ * Flies the desk off-screen along a launch direction, and back again.
  *
- * Clicking the plane on the travel tile launches it; once the desk has cleared
- * the viewport `onEscape` fires (which swaps in the globe) and the offset is
- * reset. `recall` replays the journey in reverse from where it left off.
+ * The transform is written straight to the node rather than held in state:
+ * this runs every frame, and re-rendering eleven tiles sixty times a second to
+ * move one element is what made the original stutter. React only hears about
+ * the journey when it ends, via `onEscape`.
  */
 export function useFlyAway({ onEscape }: { onEscape: () => void }) {
-  const [offset, setOffset] = useState<Vector>(ORIGIN);
+  const element = useRef<HTMLDivElement | null>(null);
+  /** Where the desk came to rest off-screen, so `recall` can retrace it. */
+  const exit = useRef<Vector>(ORIGIN);
+  const cancel = useRef<(() => void) | null>(null);
+  /** Work deferred until the desk remounts — see `deskRef`. */
+  const pending = useRef<(() => void) | null>(null);
 
-  const phase = useRef<Phase>("resting");
-  const velocity = useRef<Vector>(ORIGIN);
-  // Where the desk was when it cleared the viewport, so `recall` can fly back
-  // in along the same line.
-  const exitOffset = useRef<Vector>(ORIGIN);
-  const frame = useRef<number | null>(null);
-  const position = useRef<Vector>(ORIGIN);
-
-  // Held in a ref so the animation loop never needs re-creating.
   const onEscapeRef = useRef(onEscape);
   onEscapeRef.current = onEscape;
 
-  const commit = useCallback((next: Vector) => {
-    position.current = next;
-    setOffset(next);
+  const paint = useCallback((offset: Vector, depth: number) => {
+    const node = element.current;
+    if (!node) return;
+
+    const scale = 1 - DEPTH_SCALE * depth;
+    node.style.transform = `translate3d(${offset.x}px, ${offset.y}px, 0) scale(${scale})`;
+    node.style.opacity = `${1 - DEPTH_FADE * depth}`;
   }, []);
 
-  const settle = useCallback(
-    (next: Vector) => {
-      phase.current = "resting";
-      if (frame.current !== null) cancelAnimationFrame(frame.current);
-      frame.current = null;
-      commit(next);
-    },
-    [commit],
-  );
+  const launch = useCallback(
+    (direction: Vector) => {
+      cancel.current?.();
 
-  const step = useCallback(() => {
-    const { innerWidth: width, innerHeight: height } = window;
-    const { x: vx, y: vy } = velocity.current;
-    const { x, y } = position.current;
+      // The desk slides opposite the plane, so the two separate on screen as
+      // though the camera were following it.
+      const length = magnitude(direction.x, direction.y);
+      const distance =
+        Math.hypot(window.innerWidth, window.innerHeight) * TRAVEL;
 
-    if (phase.current === "leaving") {
-      const next = {
-        x: x - vx * width * PAN_SPEED,
-        y: y - vy * height * PAN_SPEED,
+      exit.current = {
+        x: (-direction.x / length) * distance,
+        y: (-direction.y / length) * distance,
       };
 
-      if (Math.abs(next.x) > width || Math.abs(next.y) > height) {
-        exitOffset.current = next;
-        settle(ORIGIN);
+      if (prefersReducedMotion()) {
         onEscapeRef.current();
         return;
       }
 
-      commit(next);
-    } else {
-      const next = {
-        x: stopAtOrigin(x + vx * width * PAN_SPEED, vx),
-        y: stopAtOrigin(y + vy * height * PAN_SPEED, vy),
-      };
-
-      if (next.x === 0 && next.y === 0) {
-        exitOffset.current = ORIGIN;
-        velocity.current = ORIGIN;
-        settle(ORIGIN);
-        return;
-      }
-
-      commit(next);
-    }
-
-    frame.current = requestAnimationFrame(step);
-  }, [commit, settle]);
-
-  const start = useCallback(
-    (next: Phase) => {
-      phase.current = next;
-      if (frame.current === null) frame.current = requestAnimationFrame(step);
+      const { x, y } = exit.current;
+      cancel.current = animate({
+        duration: LAUNCH_MS,
+        ease: easeIn,
+        onFrame: (eased) =>
+          paint({ x: lerp(0, x, eased), y: lerp(0, y, eased) }, eased),
+        onDone: () => onEscapeRef.current(),
+      });
     },
-    [step],
-  );
-
-  const launch = useCallback(
-    (v: Vector) => {
-      velocity.current = v;
-      start("leaving");
-    },
-    [start],
+    [paint],
   );
 
   const recall = useCallback(() => {
-    commit(exitOffset.current);
-    start("returning");
-  }, [commit, start]);
+    cancel.current?.();
+    const from = exit.current;
 
-  useEffect(
-    () => () => {
-      if (frame.current !== null) cancelAnimationFrame(frame.current);
-    },
-    [],
-  );
+    const run = () => {
+      if (prefersReducedMotion()) {
+        paint(ORIGIN, 0);
+        return;
+      }
 
-  return { offset, launch, recall };
+      // Placed at the exit point before the browser paints, so the desk never
+      // flashes at centre for a frame before flying back in.
+      paint(from, 1);
+
+      cancel.current = animate({
+        duration: RETURN_MS,
+        ease: easeOut,
+        onFrame: (eased) =>
+          paint(
+            { x: lerp(from.x, 0, eased), y: lerp(from.y, 0, eased) },
+            1 - eased,
+          ),
+        onDone: () => paint(ORIGIN, 0),
+      });
+    };
+
+    // `recall` is called in the same handler that remounts the desk, so the
+    // node does not exist yet; the ref callback below flushes this.
+    if (element.current) run();
+    else pending.current = run;
+  }, [paint]);
+
+  const deskRef = useCallback((node: HTMLDivElement | null) => {
+    element.current = node;
+    if (!node) return;
+
+    const run = pending.current;
+    pending.current = null;
+    run?.();
+  }, []);
+
+  useEffect(() => () => cancel.current?.(), []);
+
+  return { deskRef, launch, recall };
 }

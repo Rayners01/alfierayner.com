@@ -1,5 +1,6 @@
 "use client";
 
+import type { RefCallback } from "react";
 import { projects } from "@/content/projects";
 import type { Vector } from "./use-fly-away";
 import { AboutTile } from "./tiles/about-tile";
@@ -14,9 +15,9 @@ import { ProjectTile } from "./tiles/project-tile";
 import { TravelTile } from "./tiles/travel-tile";
 
 type Props = {
-  /** Translation applied while the desk flies off-screen and back. */
-  offset: Vector;
-  onLaunch: (velocity: Vector) => void;
+  /** Attaches the node that `useFlyAway` animates. */
+  deskRef: RefCallback<HTMLDivElement>;
+  onLaunch: (direction: Vector) => void;
   onOpenPhotos: () => void;
 };
 
@@ -24,11 +25,11 @@ type Props = {
  * The 12x8 tile grid. Tiles flow in source order, so the spans below are the
  * layout — reordering this list reorders the page.
  */
-export function DeskGrid({ offset, onLaunch, onOpenPhotos }: Props) {
+export function DeskGrid({ deskRef, onLaunch, onOpenPhotos }: Props) {
   return (
     <div
-      className="flex h-screen items-center justify-center overflow-hidden text-frame"
-      style={{ transform: `translate(${offset.x}px, ${offset.y}px)` }}
+      ref={deskRef}
+      className="flex h-screen transform-gpu items-center justify-center overflow-hidden text-frame will-change-[transform,opacity]"
     >
       <div className="grid h-[90%] w-3/4 grid-cols-12 grid-rows-8 gap-4">
         <IntroTile className="col-span-9 row-span-4" />

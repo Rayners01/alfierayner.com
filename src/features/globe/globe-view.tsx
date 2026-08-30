@@ -47,7 +47,7 @@ export function GlobeView({ onBack }: { onBack: () => void }) {
   );
 
   return (
-    <div className="h-screen w-full">
+    <div className="view-enter h-screen w-full">
       <Button onClick={onBack} className="mt-4 ml-4 h-10 w-20">
         Back
       </Button>
