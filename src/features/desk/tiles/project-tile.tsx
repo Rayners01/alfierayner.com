@@ -7,15 +7,6 @@ import { cn } from "@/lib/cn";
 type Props = {
   project: Project;
   className?: string;
-  /**
-   * Applied to the image — pick an `object-fit` here, and inset a logo with
-   * padding.
-   *
-   * Insetting has to happen on the image, not on a wrapper: the image is
-   * `fill`, so it is absolutely positioned against the wrapper's *padding*
-   * box, and padding there leaves it exactly where it was. Padding on the
-   * image does work, because `object-fit` sizes against the content box.
-   */
   imageClassName?: string;
 };
 

@@ -23,11 +23,6 @@ function format(time: Date) {
   return `${clock} ${zone}`;
 }
 
-/**
- * My local time, ticking on the minute boundary rather than every 60s from
- * mount — otherwise the displayed minute lags by however long the page took
- * to load.
- */
 export function Clock() {
   const [time, setTime] = useState<Date | null>(null);
 
@@ -48,8 +43,6 @@ export function Clock() {
     };
   }, []);
 
-  // Rendered empty on the server: the clock is client-local by definition, so
-  // any server-rendered value would be wrong and cause a hydration mismatch.
   return (
     <p className={`text-xl ${lora.className}`} suppressHydrationWarning>
       {time ? format(time) : ""}

@@ -1,14 +1,3 @@
-/**
- * Snapshots the running total from my Givestar fundraising page.
- *
- * Givestar renders the total client-side and blocks plain server-to-server
- * fetches, so the page is loaded in a headless browser and the total is read
- * out of the hydration payload. Run on a cron on the VPS; the Kilimanjaro
- * page reads the resulting file through /api/donation-total.
- *
- *   npm run fetch-donation
- */
-
 import { writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -22,7 +11,6 @@ const OUTPUT_PATH = path.join(
   "donation-total.json",
 );
 
-/** Chrome is used from the host rather than bundled, to keep installs small. */
 const CHROME_PATHS = {
   darwin: "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
   linux: "/snap/bin/chromium",
@@ -43,8 +31,6 @@ async function readDonationTotal(html) {
   const matches = [...html.matchAll(/"donationTotal":([0-9.]+)/g)];
   if (matches.length === 0) return null;
 
-  // The payload carries per-campaign totals as well as the overall one; the
-  // largest is the figure shown on the page.
   return Math.max(...matches.map((match) => parseFloat(match[1])));
 }
 

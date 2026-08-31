@@ -1,11 +1,3 @@
-/**
- * Applies any migration in db/migrations that has not run yet.
- *
- *   npm run db:migrate
- *
- * Each file runs inside a transaction alongside the insert that records it, so
- * a failure leaves neither a half-applied schema nor a false record of it.
- */
 import { readFile, readdir } from "node:fs/promises";
 import path from "node:path";
 import { Client } from "pg";

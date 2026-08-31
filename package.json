@@ -23,6 +23,8 @@
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-globe.gl": "^2.36.0",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
     "server-only": "^0.0.1",
     "three": "^0.180.0"
   },

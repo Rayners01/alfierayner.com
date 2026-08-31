@@ -1,10 +1,6 @@
 import React from "react";
 import { cn } from "@/lib/cn";
 
-/**
- * Chunky offset border that presses in on click. Shared by `Button` and
- * `ButtonLink` so both variants stay visually identical.
- */
 const pressableSurface = cn(
   "flex items-center justify-center rounded-lg",
   "border-t-2 border-l-2 border-b-4 border-r-4 border-frame",
@@ -21,8 +17,6 @@ export function Button({
   return <button className={cn(pressableSurface, className)} {...props} />;
 }
 
-/** A `Button` that navigates. Renders an anchor so middle-click and
- *  open-in-new-tab behave the way people expect. */
 export function ButtonLink({
   className,
   ...props

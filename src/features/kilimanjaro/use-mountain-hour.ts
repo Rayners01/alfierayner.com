@@ -22,15 +22,7 @@ export function frameForHour(hour: number): number {
   return (hour + FRAME_OFFSET) % 24 || 24;
 }
 
-/**
- * The hour on the mountain, plus the hour we are cross-fading away from.
- *
- * Two frames are held at once so the scene can dissolve between them; the
- * outgoing frame is dropped when the incoming image reports it has loaded.
- */
 export function useMountainHour() {
-  // Resolved on the client only — the server has no idea what time it is where
-  // the visitor's mountain is, and guessing would flash the wrong artwork.
   const [hour, setHour] = useState<number | null>(null);
   const [previousHour, setPreviousHour] = useState<number | null>(null);
   const [transitioning, setTransitioning] = useState(false);

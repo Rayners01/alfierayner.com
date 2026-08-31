@@ -27,21 +27,20 @@ function toPhoto(row: PhotoRow): Photo {
   };
 }
 
-export async function listPhotos(): Promise<Photo[]> {
+/** Images uploaded while writing a post, which the library must not show. */
+export type PhotoKind = "library" | "post";
+
+export async function listPhotos(kind: PhotoKind = "library"): Promise<Photo[]> {
   const rows = await query<PhotoRow>(
     `select id, filename, caption, created_at
        from photos
+      where kind = $1
       order by created_at desc, id desc`,
+    [kind],
   );
   return rows.map(toPhoto);
 }
 
-/**
- * Confirms the bytes really are the image type they claim to be.
- *
- * `File.type` is supplied by the browser and is trivially spoofed, so the
- * magic number is checked before anything is written to disk.
- */
 function sniff(bytes: Buffer): string | null {
   if (bytes.length >= 3 && bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) {
     return "image/jpeg";
@@ -75,10 +74,12 @@ export async function createPhoto({
   file,
   caption,
   userId,
+  kind = "library",
 }: {
   file: File;
   caption: string;
   userId: string;
+  kind?: PhotoKind;
 }): Promise<UploadResult> {
   const trimmed = caption.trim();
   if (!trimmed) return { ok: false, reason: "missing-caption" };
@@ -98,10 +99,10 @@ export async function createPhoto({
 
   try {
     const row = await queryOne<PhotoRow>(
-      `insert into photos (filename, caption, mime_type, byte_size, uploaded_by)
-            values ($1, $2, $3, $4, $5)
+      `insert into photos (filename, caption, mime_type, byte_size, uploaded_by, kind)
+            values ($1, $2, $3, $4, $5, $6)
          returning id, filename, caption, created_at`,
-      [filename, trimmed, mimeType, bytes.length, userId],
+      [filename, trimmed, mimeType, bytes.length, userId, kind],
     );
 
     return { ok: true, photo: toPhoto(row!) };

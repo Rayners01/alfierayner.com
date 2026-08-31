@@ -1,11 +1,3 @@
-/**
- * Moves the photo library that used to live in src/content/photos.ts into the
- * database, copying each file into the uploads directory.
- *
- *   npm run db:seed
- *
- * Safe to re-run: it skips any caption already present.
- */
 import { copyFile, mkdir, stat } from "node:fs/promises";
 import path from "node:path";
 import { randomUUID } from "node:crypto";

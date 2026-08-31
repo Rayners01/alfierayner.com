@@ -45,11 +45,8 @@ export function LoginForm() {
     "w-full rounded-md border-2 border-frame bg-raised px-3 py-2 text-frame outline-none focus:border-accent";
 
   return (
-    <Card className="w-full max-w-sm">
+    <Card hoverable={false} className="w-full max-w-sm">
       <h1 className="mb-1 text-xl font-semibold text-ink">Sign in</h1>
-      <p className="mb-4 text-sm text-muted">
-        Accounts are created from the command line — there is no signup.
-      </p>
 
       <form onSubmit={submit} className="flex flex-col gap-3">
         <label className="flex flex-col gap-1 text-sm">

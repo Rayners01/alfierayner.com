@@ -10,10 +10,6 @@ export type SessionUser = {
 
 /**
  * Who is signed in, from the client's point of view.
- *
- * Only ever used to decide whether to *offer* the upload controls — the API
- * re-checks the session on every write, so a tampered client gains nothing but
- * a form that 401s.
  */
 export function useSession() {
   const [user, setUser] = useState<SessionUser | null>(null);

@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* The default look. `html[data-theme="fun"]` below swaps every value. */
+/* Default look */
 @theme {
   --color-frame: #DCD3C1;    /* borders and primary text */
   --color-ink: #FDF9F0;      /* headings */
@@ -14,21 +14,11 @@
   :root {
     color-scheme: dark;
 
-    /* Artwork that ships per theme. Held as variables so the elements using
-       them never need to know which look is active. */
     --art-page: url("/assets/tortoise-shell-dark.svg");
     --art-paper: url("/assets/zig-zag-dark.svg");
   }
 }
 
-/* --------------------------------------------------------------------------
-   The original bright look
-
-   Unlayered on purpose. `@theme` emits its variables into Tailwind's `theme`
-   layer, and unlayered rules outrank any layer, so this reliably wins without
-   `!important`. Redefining the same custom properties is enough — every
-   `bg-surface`, `text-frame` and so on resolves through them.
-   -------------------------------------------------------------------------- */
 html[data-theme="fun"] {
   --color-frame: #15803d;
   --color-ink: #14532d;
@@ -101,4 +91,105 @@ body .float-tooltip-kap {
   color: inherit;
   font: inherit;
   max-width: none;
+}
+
+/* Markdown */
+.prose {
+  color: var(--color-frame);
+  line-height: 1.7;
+}
+
+.prose > * + * {
+  margin-top: 1.1em;
+}
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4 {
+  color: var(--color-ink);
+  font-weight: 600;
+  line-height: 1.25;
+  margin-top: 1.8em;
+}
+
+.prose h1 { font-size: 1.7rem; }
+.prose h2 { font-size: 1.4rem; }
+.prose h3 { font-size: 1.18rem; }
+.prose h4 { font-size: 1rem; }
+
+.prose a {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.prose strong { color: var(--color-ink); font-weight: 600; }
+
+.prose ul,
+.prose ol {
+  padding-left: 1.4em;
+}
+
+.prose ul { list-style: disc; }
+.prose ol { list-style: decimal; }
+.prose li + li { margin-top: 0.35em; }
+
+.prose blockquote {
+  border-left: 3px solid var(--color-accent);
+  padding-left: 1em;
+  color: var(--color-muted);
+  font-style: italic;
+}
+
+.prose code {
+  background: color-mix(in srgb, var(--color-raised) 70%, transparent);
+  border-radius: 4px;
+  padding: 0.1em 0.35em;
+  font-size: 0.9em;
+}
+
+.prose pre {
+  background: color-mix(in srgb, var(--color-raised) 70%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-frame) 30%, transparent);
+  border-radius: 8px;
+  padding: 1em;
+  overflow-x: auto;
+}
+
+.prose pre code {
+  background: none;
+  padding: 0;
+  font-size: 0.875em;
+}
+
+.prose img {
+  border-radius: 8px;
+  border: 2px solid var(--color-frame);
+  max-width: 100%;
+  height: auto;
+}
+
+.prose hr {
+  border: 0;
+  border-top: 1px solid color-mix(in srgb, var(--color-frame) 30%, transparent);
+}
+
+/* Tables come from remark-gfm; they scroll rather than widen the page. */
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.94em;
+}
+
+.prose th,
+.prose td {
+  border: 1px solid color-mix(in srgb, var(--color-frame) 30%, transparent);
+  padding: 0.45em 0.7em;
+  text-align: left;
+}
+
+.prose th {
+  color: var(--color-ink);
+  background: color-mix(in srgb, var(--color-raised) 50%, transparent);
 }

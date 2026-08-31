@@ -9,9 +9,11 @@ import { getSessionUser } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
 
-/** The library is public. */
-export async function GET() {
-  const photos = await listPhotos();
+/** The library is public. `?kind=post` lists images used inside blog posts. */
+export async function GET(request: Request) {
+  const kind =
+    new URL(request.url).searchParams.get("kind") === "post" ? "post" : "library";
+  const photos = await listPhotos(kind);
   return NextResponse.json(
     { photos },
     { headers: { "Cache-Control": "no-store" } },
@@ -41,6 +43,7 @@ export async function POST(request: Request) {
 
   const file = form.get("file");
   const caption = form.get("caption");
+  const kind = form.get("kind") === "post" ? "post" : "library";
 
   if (!(file instanceof File) || typeof caption !== "string") {
     return NextResponse.json(
@@ -49,7 +52,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const result = await createPhoto({ file, caption, userId: user.id });
+  const result = await createPhoto({ file, caption, userId: user.id, kind });
 
   if (!result.ok) {
     return NextResponse.json(

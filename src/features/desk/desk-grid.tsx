@@ -31,9 +31,6 @@ export function DeskGrid({ deskRef, onLaunch, onOpenPhotos }: Props) {
         <AboutTile className="col-span-3 row-span-6" />
         <ContactTile className="col-span-3 row-span-4" />
         <ClockTile className="col-span-3 row-span-1" />
-        {/* Tiles whose content is absolutely positioned or `h-full` have no
-            intrinsic height, so they need an explicit one once the phone
-            layout drops the fixed grid rows. */}
         <TravelTile
           className="col-span-3 row-span-1 max-md:h-28"
           onLaunch={onLaunch}

@@ -1,12 +1,5 @@
 import type { Theme } from "./theme";
 
-/**
- * The design tokens from `globals.css`, as plain hex values.
- *
- * WebGL and canvas surfaces (the globe) cannot read Tailwind classes or CSS
- * variables, so they read from here instead. Keep in sync with the `@theme`
- * block and its `[data-theme="fun"]` override.
- */
 export type Palette = {
   frame: string;
   ink: string;

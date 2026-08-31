@@ -1,8 +1,5 @@
 "use client";
 
-/* eslint-disable @next/next/no-img-element -- The artwork frames are swapped
-   imperatively by `useClimb` and cross-faded by hour; next/image's wrapper
-   would fight both, and these are already sized pixel-art PNGs. */
 
 import { useEffect, useState } from "react";
 import { kilimanjaro } from "@/content/kilimanjaro";

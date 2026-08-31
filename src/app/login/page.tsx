@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function LoginPage() {
-  // Already signed in — nothing to do here.
+  // Already signed in
   if (await getSessionUser()) redirect("/");
 
   return (

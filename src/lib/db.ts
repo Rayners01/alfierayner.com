@@ -1,11 +1,6 @@
 import "server-only";
 import { Pool, type QueryResultRow } from "pg";
 
-/**
- * Cached on `globalThis` because `next dev` re-evaluates modules on every
- * edit; without this each save would open another pool until Postgres starts
- * refusing connections.
- */
 const globalForPg = globalThis as unknown as { pool?: Pool };
 
 function createPool(): Pool {

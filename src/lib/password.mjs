@@ -10,13 +10,6 @@ const KEY_BYTES = 64;
 /**
  * Password hashing built on `node:crypto`.
  *
- * scrypt is memory-hard and ships with Node, so there is no native module to
- * compile on the VPS — the usual reason bcrypt/argon2 installs break on deploy.
- *
- * Plain JavaScript rather than TypeScript on purpose: `scripts/create-user.mjs`
- * imports this and must run on bare Node during deployment, with no transform
- * step that could fail on the server.
- *
  * @param {string} password
  * @returns {Promise<string>} `scrypt$<salt hex>$<derived key hex>`
  */

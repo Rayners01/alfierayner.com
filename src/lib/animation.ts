@@ -30,13 +30,6 @@ type AnimateOptions = {
   onDone?: () => void;
 };
 
-/**
- * Drives `onFrame` from 0 to 1 over `duration`, then calls `onDone`.
- *
- * Progress comes from the clock rather than from counting frames, so the
- * motion takes the same time and follows the same curve on a 60Hz laptop, a
- * 120Hz phone, and a tab that just dropped a frame. Returns a cancel function.
- */
 export function animate({
   duration,
   ease,

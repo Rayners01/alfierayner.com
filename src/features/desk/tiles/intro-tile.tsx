@@ -39,9 +39,6 @@ export function IntroTile({ className }: { className?: string }) {
               />
             </ButtonLink>
           ))}
-
-          {/* `download` names the saved file; it only works because the PDF is
-              served from our own origin. */}
           <ButtonLink
             href={cv.href}
             download={cv.filename}

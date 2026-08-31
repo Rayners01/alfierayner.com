@@ -17,13 +17,6 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-/**
- * Applies the remembered theme before the browser paints.
- *
- * Runs blocking in the head on purpose: leaving it to React would render the
- * default look first and repaint on hydration, which is a visible flash of the
- * wrong colours on every load for anyone who picked the other one.
- */
 const applyStoredTheme = `
 (function () {
   try {
@@ -40,8 +33,6 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    // The script above sets `data-theme` before React hydrates, so the server
-    // markup and the live DOM differ by that attribute by design.
     <html
       lang="en"
       className={`bg-neutral-950 ${montserrat.className}`}

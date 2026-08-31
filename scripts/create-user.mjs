@@ -1,16 +1,3 @@
-/**
- * Creates an account. There is no public signup route, so this is the only way
- * one comes into existence.
- *
- * Interactively:
- *   npm run user:create
- *
- * Non-interactively (CI, or a scripted VPS provision) — the password is read
- * from stdin rather than an environment variable, so it stays out of the
- * process table and the shell history:
- *   USER_EMAIL=me@example.com USER_NAME="Me" \
- *     node --env-file=.env scripts/create-user.mjs < password.txt
- */
 import { createInterface } from "node:readline/promises";
 import { stdin, stdout } from "node:process";
 import { Client } from "pg";
@@ -18,7 +5,6 @@ import { hashPassword } from "../src/lib/password.mjs";
 
 const MIN_PASSWORD_LENGTH = 12;
 
-/** Prompts on a terminal, masking the password as it is typed. */
 async function askInteractively() {
   const rl = createInterface({ input: stdin, output: stdout });
 
@@ -31,8 +17,6 @@ async function askInteractively() {
   }
 
   async function askSecret(prompt) {
-    // `question` writes the prompt first; muting from here swallows only the
-    // keystrokes that follow.
     const answer = rl.question(prompt);
     muted = true;
     try {
@@ -57,13 +41,6 @@ async function askInteractively() {
   }
 }
 
-/**
- * Reads the whole of stdin as the password.
- *
- * Sequential `readline.question` calls cannot be used here: over a pipe every
- * line arrives in one chunk, only the pending question consumes one, and the
- * rest are dropped before stdin closes.
- */
 async function readFromEnvAndStdin() {
   const email = (process.env.USER_EMAIL ?? "").trim().toLowerCase();
   const displayName = (process.env.USER_NAME ?? "").trim();
