@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import { ButtonLink } from "@/components/ui/button";
 import { DownloadIcon } from "@/components/icons/download-icon";
+import { LatestPost } from "@/features/blog/latest-post";
 import { useTheme } from "@/features/theme/theme-provider";
 import { cv, profile, socials } from "@/content/profile";
 import { themedAsset } from "@/lib/theme";
@@ -23,6 +24,8 @@ export function IntroTile({ className }: { className?: string }) {
             Hi, I&rsquo;m <strong>{profile.name}</strong>, {profile.headline}.
           </p>
         </div>
+
+        <LatestPost className="max-md:mt-2" />
 
         <div className="flex h-10 w-full flex-row gap-4">
           {socials.map((social) => (
