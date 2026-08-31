@@ -22,7 +22,7 @@ export function Desk() {
   }, [recall]);
 
   return (
-    <div className="h-screen overflow-hidden bg-[url('/assets/tortoise-shell.svg')] max-md:h-auto max-md:min-h-dvh max-md:overflow-visible">
+    <div className="h-screen overflow-hidden bg-[url('/assets/tortoise-shell-dark.svg')] max-md:h-auto max-md:min-h-dvh max-md:overflow-visible">
       {view === "desk" && (
         <DeskGrid
           deskRef={deskRef}

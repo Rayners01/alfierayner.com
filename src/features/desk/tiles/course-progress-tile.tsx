@@ -22,7 +22,7 @@ export function CourseProgressTile({ className }: { className?: string }) {
     <Card className={className}>
       <div className="flex h-full w-full flex-col justify-center p-2">
         <div className="mb-2 flex items-end justify-between">
-          <h3 className="text-[10px] font-bold tracking-widest text-gray-500">
+          <h3 className="text-[10px] font-bold tracking-widest">
             {course.label}
           </h3>
           <span className="font-mono text-xs font-bold text-muted">

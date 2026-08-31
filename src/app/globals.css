@@ -1,12 +1,21 @@
 @import "tailwindcss";
 
+/*@theme {
+  --color-frame: #15803d;
+  --color-ink: #14532d;
+  --color-muted: #22c55e;
+  --color-surface: #d9f99d;
+  --color-raised: #ecfccb;
+  --color-accent: #facc15;
+}*/
+
 @theme {
-  --color-frame: #15803d; /* borders and primary text */
-  --color-ink: #14532d; /* headings sitting on artwork */
-  --color-muted: #22c55e; /* labels and secondary text */
-  --color-surface: #d9f99d; /* tile fill */
-  --color-raised: #ecfccb; /* nested surface inside a tile */
-  --color-accent: #facc15; /* hover and highlight */
+  --color-frame: #DCD3C1;    /* borders and primary text */
+  --color-ink: #FDF9F0;      /* headings */
+  --color-muted: #BFB9A9;    /* labels and secondary text */
+  --color-surface: #1E4B5E;  /* tile fill */
+  --color-raised: #2A6377;   /* nested surface inside a tile */
+  --color-accent: #E3B76B;   /* hover and highlight */
 }
 
 @layer base {

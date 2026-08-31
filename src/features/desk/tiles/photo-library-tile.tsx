@@ -24,7 +24,7 @@ export function PhotoLibraryTile({
     >
       <p>Photo Library</p>
       <Image
-        src="/assets/polaroid.svg"
+        src="/assets/polaroid-dark.svg"
         alt=""
         width={30}
         height={30}

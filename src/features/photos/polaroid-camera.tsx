@@ -117,7 +117,7 @@ export function PolaroidCamera({ onComplete }: { onComplete: () => void }) {
 
       <div className="z-10 w-60">
         <motion.img
-          src="/assets/polaroid.svg"
+          src="/assets/polaroid-dark.svg"
           alt="Polaroid camera"
           initial={{ y: -320, opacity: 0, rotate: -6 }}
           animate={stage}
