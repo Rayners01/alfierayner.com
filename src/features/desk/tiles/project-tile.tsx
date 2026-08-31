@@ -7,18 +7,21 @@ import { cn } from "@/lib/cn";
 type Props = {
   project: Project;
   className?: string;
-  frameClassName?: string;
+  /**
+   * Applied to the image — pick an `object-fit` here, and inset a logo with
+   * padding.
+   *
+   * Insetting has to happen on the image, not on a wrapper: the image is
+   * `fill`, so it is absolutely positioned against the wrapper's *padding*
+   * box, and padding there leaves it exactly where it was. Padding on the
+   * image does work, because `object-fit` sizes against the content box.
+   */
   imageClassName?: string;
 };
 
-export function ProjectTile({
-  project,
-  className,
-  frameClassName,
-  imageClassName,
-}: Props) {
+export function ProjectTile({ project, className, imageClassName }: Props) {
   const isExternal = project.href.startsWith("http");
-  const frame = cn("relative block h-full w-full", frameClassName);
+  const frame = "relative block h-full w-full";
 
   const artwork = (
     <Image

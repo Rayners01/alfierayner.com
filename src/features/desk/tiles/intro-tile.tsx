@@ -1,11 +1,17 @@
+"use client";
+
 import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import { ButtonLink } from "@/components/ui/button";
 import { DownloadIcon } from "@/components/icons/download-icon";
+import { useTheme } from "@/features/theme/theme-provider";
 import { cv, profile, socials } from "@/content/profile";
+import { themedAsset } from "@/lib/theme";
 import { cn } from "@/lib/cn";
 
 export function IntroTile({ className }: { className?: string }) {
+  const { theme } = useTheme();
+
   // Stacks on phones, portrait first — `flex-col-reverse` puts the photo above
   // the copy without reordering the markup.
   return (
@@ -26,7 +32,7 @@ export function IntroTile({ className }: { className?: string }) {
               className="w-1/5 max-md:w-auto max-md:flex-1"
             >
               <Image
-                src={social.icon}
+                src={themedAsset(social.icon, theme)}
                 width={20}
                 height={20}
                 alt={`${social.label} logo`}
@@ -54,7 +60,7 @@ export function IntroTile({ className }: { className?: string }) {
           width={220}
           height={220}
           priority
-          className="rounded-full border-4 border-frame max-md:h-32 max-md:w-32"
+          className="rounded-full border-4 border-frame hover:border-accent max-md:h-32 max-md:w-32"
         />
       </div>
     </Card>

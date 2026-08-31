@@ -4,6 +4,7 @@ import { useCallback, useState } from "react";
 import { GlobeView } from "@/features/globe/globe-view";
 import { PolaroidCamera } from "@/features/photos/polaroid-camera";
 import { PolaroidDeveloping } from "@/features/photos/polaroid-developing";
+import { ThemeToggle } from "@/features/theme/theme-toggle";
 import { DeskGrid } from "./desk-grid";
 import { useFlyAway } from "./use-fly-away";
 
@@ -22,7 +23,8 @@ export function Desk() {
   }, [recall]);
 
   return (
-    <div className="h-screen overflow-hidden bg-[url('/assets/tortoise-shell-dark.svg')] max-md:h-auto max-md:min-h-dvh max-md:overflow-visible">
+    <div className="h-screen overflow-hidden bg-[image:var(--art-page)] max-md:h-auto max-md:min-h-dvh max-md:overflow-visible">
+      <ThemeToggle />
       {view === "desk" && (
         <DeskGrid
           deskRef={deskRef}

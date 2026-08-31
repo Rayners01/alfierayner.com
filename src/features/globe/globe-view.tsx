@@ -6,7 +6,8 @@ import * as THREE from "three";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { travel, visitedCountryCodes } from "@/content/travel";
-import { palette } from "@/lib/palette";
+import { useTheme } from "@/features/theme/theme-provider";
+import { palettes } from "@/lib/palette";
 
 // react-globe.gl touches `window` on import, so it can only load in the browser.
 const Globe = dynamic(() => import("react-globe.gl"), { ssr: false });
@@ -31,6 +32,11 @@ export function GlobeView({ onBack }: { onBack: () => void }) {
   const [countries, setCountries] = useState<CountryFeature[] | null>(null);
   const [hovered, setHovered] = useState<object | null>(null);
 
+  // WebGL cannot read the CSS variables, so the globe resolves the active
+  // theme's colours itself.
+  const { theme } = useTheme();
+  const palette = palettes[theme];
+
   useEffect(() => {
     const controller = new AbortController();
 
@@ -46,7 +52,7 @@ export function GlobeView({ onBack }: { onBack: () => void }) {
 
   const globeMaterial = useMemo(
     () => new THREE.MeshPhongMaterial({ color: palette.ocean }),
-    [],
+    [palette.ocean],
   );
 
   const capColor = useCallback(
@@ -58,13 +64,13 @@ export function GlobeView({ onBack }: { onBack: () => void }) {
       if (polygon === hovered) return visited ? palette.muted : palette.raised;
       return visited ? palette.frame : palette.surface;
     },
-    [hovered],
+    [hovered, palette],
   );
 
   const strokeColor = useCallback(
     (polygon: object) =>
       polygon === hovered ? palette.accent : "rgba(0,0,0,0.9)",
-    [hovered],
+    [hovered, palette],
   );
 
   const altitude = useCallback(
@@ -90,7 +96,7 @@ export function GlobeView({ onBack }: { onBack: () => void }) {
           ${visited ? travel.visitedLabel : travel.unvisitedLabel}
         </span>
       </div>`;
-  }, []);
+  }, [palette]);
 
   return (
     <div className="view-enter h-screen w-full">

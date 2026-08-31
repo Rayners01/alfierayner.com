@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
+import { useTheme } from "@/features/theme/theme-provider";
+import { themedAsset } from "@/lib/theme";
 import { FILM_SCALE, framePadding, frameSize } from "./frame";
 import { useViewportSize } from "./use-viewport-size";
 
@@ -61,6 +63,7 @@ export function PolaroidCamera({ onComplete }: { onComplete: () => void }) {
   const [stage, setStage] = useState<Stage>("arrive");
   const viewport = useViewportSize();
   const reduceMotion = useReducedMotion();
+  const { theme } = useTheme();
 
   const finish = useRef(onComplete);
   finish.current = onComplete;
@@ -117,7 +120,7 @@ export function PolaroidCamera({ onComplete }: { onComplete: () => void }) {
 
       <div className="z-10 w-60">
         <motion.img
-          src="/assets/polaroid-dark.svg"
+          src={themedAsset("/assets/polaroid.svg", theme)}
           alt="Polaroid camera"
           initial={{ y: -320, opacity: 0, rotate: -6 }}
           animate={stage}

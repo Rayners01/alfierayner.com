@@ -41,11 +41,6 @@ function credentials() {
   return { clientId, clientSecret, refreshToken };
 }
 
-/**
- * Access tokens last an hour, so cache one in module scope. Without this every
- * poll from every visitor costs an extra round trip to Spotify's token
- * endpoint. Refreshed a minute early to avoid racing the expiry.
- */
 let cachedToken: { value: string; expiresAt: number } | null = null;
 
 async function getAccessToken(): Promise<string> {
@@ -106,13 +101,6 @@ function toNowPlaying(
   };
 }
 
-/**
- * What I'm listening to, falling back to the last track I played.
- *
- * Returns `null` rather than throwing or leaking an error payload — this value
- * is serialised straight to the browser, so it must never carry token or
- * diagnostic data.
- */
 export async function getNowPlaying(): Promise<NowPlaying | null> {
   try {
     const accessToken = await getAccessToken();
@@ -123,7 +111,6 @@ export async function getNowPlaying(): Promise<NowPlaying | null> {
       cache: "no-store",
     });
 
-    // 204 means nothing is playing; anything >= 400 means we cannot tell.
     if (current.ok && current.status !== 204) {
       const data = (await current.json()) as CurrentlyPlayingResponse;
       if (data?.item) {

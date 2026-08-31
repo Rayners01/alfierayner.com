@@ -1,5 +1,9 @@
+"use client";
+
 import Image from "next/image";
 import { Card } from "@/components/ui/card";
+import { useTheme } from "@/features/theme/theme-provider";
+import { themedAsset } from "@/lib/theme";
 import { cn } from "@/lib/cn";
 
 export function PhotoLibraryTile({
@@ -9,6 +13,8 @@ export function PhotoLibraryTile({
   className?: string;
   onOpen: () => void;
 }) {
+  const { theme } = useTheme();
+
   return (
     <Card
       className={cn(
@@ -24,7 +30,7 @@ export function PhotoLibraryTile({
     >
       <p>Photo Library</p>
       <Image
-        src="/assets/polaroid-dark.svg"
+        src={themedAsset("/assets/polaroid.svg", theme)}
         alt=""
         width={30}
         height={30}

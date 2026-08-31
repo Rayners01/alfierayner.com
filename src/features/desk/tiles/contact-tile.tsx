@@ -19,7 +19,11 @@ export function ContactTile({ className }: { className?: string }) {
       </p>
 
       <FieldLabel>Phone number</FieldLabel>
-      <p className="mb-4">{contact.phone}</p>
+      <p className="mb-4">
+        <a href={`tel:${contact.phone}`} className="hover:text-accent">
+          {contact.phone}
+        </a>
+      </p>
 
       <FieldLabel>Social Media</FieldLabel>
       {socials.map((social) => (

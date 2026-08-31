@@ -66,7 +66,7 @@ export function NowPlayingTile({ className }: { className?: string }) {
   if (!track) {
     return (
       <Card className={className}>
-        <p className="text-sm">Spotify is having a quiet moment.</p>
+        <p className="text-sm">Unable to connect to Spotify.</p>
       </Card>
     );
   }
@@ -96,7 +96,7 @@ export function NowPlayingTile({ className }: { className?: string }) {
 
           <div className="flex w-full max-w-[180px] flex-col overflow-hidden sm:max-w-[220px]">
             <p className="truncate font-semibold">{track.title}</p>
-            <p className="truncate text-green-600">{track.artist}</p>
+            <p className="truncate">{track.artist}</p>
             <ExternalLink
               href={track.trackUrl}
               className="mt-1 text-xs text-muted hover:underline"

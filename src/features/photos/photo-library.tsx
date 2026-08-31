@@ -103,7 +103,7 @@ export function PhotoLibrary({ onClose, interactive = true }: Props) {
   return (
     <div
       className={cn(
-        "flex h-full w-full flex-col bg-[url('/assets/zig-zag-dark.svg')]",
+        "flex h-full w-full flex-col bg-[image:var(--art-paper)]",
         !interactive && "pointer-events-none",
       )}
       aria-hidden={!interactive}

@@ -1,13 +1,5 @@
 import { Lora, Montserrat, Press_Start_2P } from "next/font/google";
 
-/**
- * Every font the site loads, in one place.
- *
- * next/font must be called at module scope, so declaring these together keeps
- * the set visible and stops the same face being configured two different ways
- * in two different components.
- */
-
 /** Body text. */
 export const montserrat = Montserrat({ subsets: ["latin"] });
 

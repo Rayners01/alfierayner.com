@@ -8,12 +8,12 @@ export const socials: Social[] = [
   {
     label: "GitHub",
     href: "https://www.github.com/Rayners01",
-    icon: "/assets/github-dark.svg",
+    icon: "/assets/github.svg",
   },
   {
     label: "LinkedIn",
     href: "https://www.linkedin.com/in/alfie-rayner-ab64a633a/",
-    icon: "/assets/linkedin-dark.svg",
+    icon: "/assets/linkedin.svg",
   },
 ];
 

@@ -51,8 +51,7 @@ export function DeskGrid({ deskRef, onLaunch, onOpenPhotos }: Props) {
         <ProjectTile
           project={projects.firstChair}
           className="col-span-3 row-span-1 bg-white max-md:h-24"
-          frameClassName="px-[5%]"
-          imageClassName="object-contain"
+          imageClassName="object-contain p-[5%]"
         />
         <ColophonTile className="col-span-3 row-span-1" />
       </div>

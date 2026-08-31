@@ -1,14 +1,6 @@
 @import "tailwindcss";
 
-/*@theme {
-  --color-frame: #15803d;
-  --color-ink: #14532d;
-  --color-muted: #22c55e;
-  --color-surface: #d9f99d;
-  --color-raised: #ecfccb;
-  --color-accent: #facc15;
-}*/
-
+/* The default look. `html[data-theme="fun"]` below swaps every value. */
 @theme {
   --color-frame: #DCD3C1;    /* borders and primary text */
   --color-ink: #FDF9F0;      /* headings */
@@ -21,7 +13,34 @@
 @layer base {
   :root {
     color-scheme: dark;
+
+    /* Artwork that ships per theme. Held as variables so the elements using
+       them never need to know which look is active. */
+    --art-page: url("/assets/tortoise-shell-dark.svg");
+    --art-paper: url("/assets/zig-zag-dark.svg");
   }
+}
+
+/* --------------------------------------------------------------------------
+   The original bright look
+
+   Unlayered on purpose. `@theme` emits its variables into Tailwind's `theme`
+   layer, and unlayered rules outrank any layer, so this reliably wins without
+   `!important`. Redefining the same custom properties is enough — every
+   `bg-surface`, `text-frame` and so on resolves through them.
+   -------------------------------------------------------------------------- */
+html[data-theme="fun"] {
+  --color-frame: #15803d;
+  --color-ink: #14532d;
+  --color-muted: #22c55e;
+  --color-surface: #d9f99d;
+  --color-raised: #ecfccb;
+  --color-accent: #facc15;
+
+  --art-page: url("/assets/tortoise-shell.svg");
+  --art-paper: url("/assets/zig-zag.svg");
+
+  color-scheme: light;
 }
 
 @layer components {
