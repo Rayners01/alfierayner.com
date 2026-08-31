@@ -43,3 +43,6 @@ next-env.d.ts
 
 # Donation snapshot, written on the VPS by scripts/fetch-donation.js
 /data
+# Uploaded images — the database holds the reference, these are the bytes
+/public/uploads/*
+!/public/uploads/.gitkeep

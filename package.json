@@ -9,11 +9,15 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "fetch-donation": "node scripts/fetch-donation.mjs",
-    "spotify:token": "node --env-file=.env scripts/spotify-refresh-token.mjs"
+    "spotify:token": "node --env-file=.env scripts/spotify-refresh-token.mjs",
+    "db:migrate": "tsx --env-file=.env scripts/migrate.ts",
+    "db:seed": "tsx --env-file=.env scripts/seed-photos.ts",
+    "user:create": "tsx --env-file=.env scripts/create-user.ts"
   },
   "dependencies": {
     "framer-motion": "^12.23.22",
     "next": "^15.5.9",
+    "pg": "^8.23.0",
     "postcss": "^8.5.6",
     "puppeteer-core": "^24.36.0",
     "react": "19.1.0",
@@ -26,12 +30,14 @@
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4.1.13",
     "@types/node": "^20",
+    "@types/pg": "^8.23.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/three": "^0.180.0",
     "eslint": "^9",
     "eslint-config-next": "15.5.4",
     "tailwindcss": "^4.1.13",
+    "tsx": "^4.23.13",
     "typescript": "^5"
   }
 }
