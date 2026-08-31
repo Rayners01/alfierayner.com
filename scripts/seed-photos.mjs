@@ -36,9 +36,7 @@ async function main() {
   await mkdir(UPLOADS_DIR, { recursive: true });
 
   try {
-    const owner = await client.query<{ id: string }>(
-      `select id from users order by id limit 1`,
-    );
+    const owner = await client.query(`select id from users order by id limit 1`);
     const uploadedBy = owner.rows[0]?.id ?? null;
 
     for (const { file, caption } of SEED) {

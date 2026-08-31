@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { queryOne } from "@/lib/db";
-import { verifyPassword } from "@/lib/password";
+import { verifyPassword } from "@/lib/password.mjs";
 import { createSession, pruneExpiredSessions } from "@/lib/session";
 
 export const dynamic = "force-dynamic";

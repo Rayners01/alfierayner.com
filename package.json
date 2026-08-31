@@ -10,9 +10,9 @@
     "typecheck": "tsc --noEmit",
     "fetch-donation": "node scripts/fetch-donation.mjs",
     "spotify:token": "node --env-file=.env scripts/spotify-refresh-token.mjs",
-    "db:migrate": "tsx --env-file=.env scripts/migrate.ts",
-    "db:seed": "tsx --env-file=.env scripts/seed-photos.ts",
-    "user:create": "tsx --env-file=.env scripts/create-user.ts"
+    "db:migrate": "node --env-file=.env scripts/migrate.mjs",
+    "db:seed": "node --env-file=.env scripts/seed-photos.mjs",
+    "user:create": "node --env-file=.env scripts/create-user.mjs"
   },
   "dependencies": {
     "framer-motion": "^12.23.22",
@@ -37,7 +37,6 @@
     "eslint": "^9",
     "eslint-config-next": "15.5.4",
     "tailwindcss": "^4.1.13",
-    "tsx": "^4.23.13",
     "typescript": "^5"
   }
 }

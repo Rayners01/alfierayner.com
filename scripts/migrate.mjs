@@ -31,7 +31,7 @@ async function main() {
 
     const applied = new Set(
       (
-        await client.query<{ name: string }>(
+        await client.query(
           `select name from schema_migrations`,
         )
       ).rows.map((row) => row.name),
@@ -62,7 +62,7 @@ async function main() {
         console.log(`applied ${name}`);
       } catch (error) {
         await client.query("rollback");
-        throw new Error(`${name} failed: ${(error as Error).message}`);
+        throw new Error(`${name} failed: ${error.message}`);
       }
     }
   } finally {
