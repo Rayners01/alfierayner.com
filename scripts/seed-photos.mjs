@@ -23,7 +23,7 @@ const SEED = [
 ];
 
 const SOURCE_DIR = path.join(process.cwd(), "public", "assets", "images");
-const UPLOADS_DIR = path.join(process.cwd(), "public", "uploads");
+const UPLOADS_DIR = process.env.UPLOADS_DIR ?? path.join(process.cwd(), "var", "uploads");
 
 async function main() {
   const connectionString = process.env.DATABASE_URL;

@@ -3,30 +3,13 @@ import { randomUUID } from "node:crypto";
 import { mkdir, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { query, queryOne } from "@/lib/db";
+import {
+  ACCEPTED_TYPES,
+  MAX_UPLOAD_BYTES,
+  UPLOADS_DIR,
+  UPLOADS_URL,
+} from "@/lib/uploads";
 import type { Photo } from "@/lib/photos.types";
-
-/**
- * Where uploaded bytes live.
- *
- * Inside `public/` so Next serves them straight from disk with no route
- * handler in the way — files added after a build are picked up immediately.
- * The directory is gitignored; point it at another volume with a symlink if
- * the VPS ever needs the storage elsewhere.
- */
-const UPLOADS_DIR = path.join(process.cwd(), "public", "uploads");
-
-/** Public path a stored file is served from. */
-const UPLOADS_URL = "/uploads";
-
-export const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
-
-/** Accepted types, and the extension each is stored under. */
-const ACCEPTED: Record<string, string> = {
-  "image/jpeg": "jpg",
-  "image/png": "png",
-  "image/webp": "webp",
-  "image/gif": "gif",
-};
 
 type PhotoRow = {
   id: string;
@@ -108,7 +91,7 @@ export async function createPhoto({
 
   // A generated name, never the client's: it removes any path traversal or
   // collision question, and stops uploads overwriting each other.
-  const filename = `${randomUUID()}.${ACCEPTED[mimeType]}`;
+  const filename = `${randomUUID()}.${ACCEPTED_TYPES[mimeType]}`;
 
   await mkdir(UPLOADS_DIR, { recursive: true });
   await writeFile(path.join(UPLOADS_DIR, filename), bytes);

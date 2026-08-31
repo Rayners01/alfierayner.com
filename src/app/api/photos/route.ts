@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import {
-  MAX_UPLOAD_BYTES,
   createPhoto,
   listPhotos,
   type UploadFailure,
 } from "@/features/photos/photo-store";
+import { MAX_UPLOAD_BYTES } from "@/lib/uploads";
 import { getSessionUser } from "@/lib/session";
 
 export const dynamic = "force-dynamic";

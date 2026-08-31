@@ -43,6 +43,7 @@ next-env.d.ts
 
 # Donation snapshot, written on the VPS by scripts/fetch-donation.js
 /data
-# Uploaded images — the database holds the reference, these are the bytes
-/public/uploads/*
-!/public/uploads/.gitkeep
+# Uploaded images — the database holds the reference, these are the bytes.
+# Outside public/ because `next start` only serves public/ as it stood at
+# build time; see src/lib/uploads.ts.
+/var/
