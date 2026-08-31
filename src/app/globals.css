@@ -1,13 +1,5 @@
 @import "tailwindcss";
 
-/* --------------------------------------------------------------------------
-   Design tokens
-
-   The site is built around a single "paper and ink" palette: lime tiles with
-   green borders, highlighted in yellow on hover. Naming these semantically
-   means a palette change is a six-line edit rather than a find-and-replace
-   across every component.
-   -------------------------------------------------------------------------- */
 @theme {
   --color-frame: #15803d; /* borders and primary text */
   --color-ink: #14532d; /* headings sitting on artwork */
@@ -24,8 +16,6 @@
 }
 
 @layer components {
-  /* Picks up where the desk left off as it receded, so swapping views reads as
-     one continuous camera move rather than a cut. */
   @keyframes view-enter {
     from {
       opacity: 0;
@@ -47,8 +37,6 @@
     }
   }
 
-  /* Chunky pixel-art range input, used by the Kilimanjaro debug controls.
-     Thumb pseudo-elements cannot be reached from utility classes. */
   .pixel-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     height: 1.5vmin;
@@ -71,20 +59,18 @@
   }
 }
 
-/* --------------------------------------------------------------------------
-   Phone layout for the desk
-
-   The desk collapses to one column below 48rem. The desktop spans stay in
-   desk-grid.tsx, where they read as the layout — this only neutralises them,
-   which matters because a `col-span-9` tile in a one-column grid would
-   otherwise generate eight implicit columns rather than wrapping.
-
-   Deliberately unlayered: it has to outrank the `col-span-*` utilities, and
-   anything inside `@layer components` would lose to them.
-   -------------------------------------------------------------------------- */
 @media (width < 48rem) {
   .desk-grid > * {
     grid-column: span 1 / span 1;
     grid-row: span 1 / span 1;
   }
+}
+
+body .float-tooltip-kap {
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  max-width: none;
 }

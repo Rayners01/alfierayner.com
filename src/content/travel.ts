@@ -1,5 +1,5 @@
 /**
- * Countries I have visited, as World Bank two-letter codes (`WB_A2`) — the
+ * Countries I have visited, as World Bank two-letter codes — the `code`
  * property carried by the Natural Earth GeoJSON the globe renders.
  */
 export const visitedCountryCodes: ReadonlySet<string> = new Set([
@@ -11,4 +11,6 @@ export const visitedCountryCodes: ReadonlySet<string> = new Set([
 export const travel = {
   tileAlt: "World map",
   globeHeading: "Countries I have visited",
+  visitedLabel: "Visited",
+  unvisitedLabel: "Not yet",
 } as const;

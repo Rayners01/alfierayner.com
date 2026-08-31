@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import * as THREE from "three";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,7 @@ const Globe = dynamic(() => import("react-globe.gl"), { ssr: false });
 
 type CountryFeature = {
   type: "Feature";
-  properties: { WB_A2: string; name: string };
+  properties: { name: string; code: string };
   geometry: GeoJSON.Geometry;
 };
 
@@ -24,8 +24,12 @@ type CountriesGeoJson = {
 
 const COUNTRIES_URL = "/data/countries-110m.geojson";
 
+const ALTITUDE = 0.01;
+const HOVER_ALTITUDE = 0.06;
+
 export function GlobeView({ onBack }: { onBack: () => void }) {
   const [countries, setCountries] = useState<CountryFeature[] | null>(null);
+  const [hovered, setHovered] = useState<object | null>(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -40,11 +44,53 @@ export function GlobeView({ onBack }: { onBack: () => void }) {
     return () => controller.abort();
   }, []);
 
-  // Allocated once: a new material on every render would leak GPU resources.
   const globeMaterial = useMemo(
     () => new THREE.MeshPhongMaterial({ color: palette.ocean }),
     [],
   );
+
+  const capColor = useCallback(
+    (polygon: object) => {
+      const visited = visitedCountryCodes.has(
+        (polygon as CountryFeature).properties.code,
+      );
+
+      if (polygon === hovered) return visited ? palette.muted : palette.raised;
+      return visited ? palette.frame : palette.surface;
+    },
+    [hovered],
+  );
+
+  const strokeColor = useCallback(
+    (polygon: object) =>
+      polygon === hovered ? palette.accent : "rgba(0,0,0,0.9)",
+    [hovered],
+  );
+
+  const altitude = useCallback(
+    (polygon: object) => (polygon === hovered ? HOVER_ALTITUDE : ALTITUDE),
+    [hovered],
+  );
+
+  const label = useCallback((polygon: object) => {
+    const { name, code } = (polygon as CountryFeature).properties;
+    const visited = visitedCountryCodes.has(code);
+
+    return `
+      <div style="
+        display: flex; align-items: baseline; gap: 8px;
+        padding: 6px 10px;
+        border: 2px solid ${palette.frame}; border-radius: 8px;
+        background: ${palette.surface}; color: ${palette.ink};
+        font-size: 13px; line-height: 1.2; white-space: nowrap;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+      ">
+        <strong>${name}</strong>
+        <span style="font-size: 11px; opacity: 0.75;">
+          ${visited ? travel.visitedLabel : travel.unvisitedLabel}
+        </span>
+      </div>`;
+  }, []);
 
   return (
     <div className="view-enter h-screen w-full">
@@ -62,15 +108,13 @@ export function GlobeView({ onBack }: { onBack: () => void }) {
         {countries && (
           <Globe
             polygonsData={countries}
-            polygonCapColor={(feature) =>
-              visitedCountryCodes.has(
-                (feature as CountryFeature).properties.WB_A2,
-              )
-                ? palette.frame
-                : palette.surface
-            }
-            polygonStrokeColor={() => "rgba(0,0,0,0.5)"}
+            polygonCapColor={capColor}
+            polygonStrokeColor={strokeColor}
             polygonSideColor={() => "rgba(255,255,255,0.5)"}
+            polygonAltitude={altitude}
+            polygonLabel={label}
+            onPolygonHover={setHovered}
+            polygonsTransitionDuration={180}
             backgroundColor="rgba(0,0,0,0)"
             globeMaterial={globeMaterial}
           />
