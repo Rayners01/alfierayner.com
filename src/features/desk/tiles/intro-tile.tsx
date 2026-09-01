@@ -27,12 +27,12 @@ export function IntroTile({ className }: { className?: string }) {
 
         <LatestPost className="max-md:mt-2" />
 
-        <div className="flex h-10 w-full flex-row gap-4">
+        <div className="flex h-10 w-full flex-row gap-5">
           {socials.map((social) => (
             <ButtonLink
               key={social.label}
               href={social.href}
-              className="w-1/5 max-md:w-auto max-md:flex-1"
+              className="w-1/4 max-md:w-auto max-md:flex-1"
             >
               <Image
                 src={themedAsset(social.icon, theme)}
@@ -45,7 +45,7 @@ export function IntroTile({ className }: { className?: string }) {
           <ButtonLink
             href={cv.href}
             download={cv.filename}
-            className="w-1/5 gap-1.5 text-sm font-semibold max-md:w-auto max-md:flex-1"
+            className="w-1/4 gap-1.5 text-sm font-semibold max-md:w-auto max-md:flex-1"
           >
             <DownloadIcon className="h-4 w-4" />
             {cv.label}
