@@ -139,7 +139,7 @@ export function PhotoLibrary({ onClose, interactive = true }: Props) {
     >
       <header className="flex items-center justify-between gap-2 px-4 pt-4 pb-3 max-md:px-3 max-md:pt-3 max-md:pb-2">
         <h1 className="truncate text-xl font-semibold text-ink max-md:text-base">
-          {expanded ? expanded.caption : "Photo Library"}
+          {expanded ? expanded.caption : "Photo Gallery"}
         </h1>
 
         <div className="flex shrink-0 items-center gap-2">

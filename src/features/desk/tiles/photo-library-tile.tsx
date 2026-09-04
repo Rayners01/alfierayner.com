@@ -28,7 +28,7 @@ export function PhotoLibraryTile({
         if (event.key === "Enter" || event.key === " ") onOpen();
       }}
     >
-      <p>Photo Library</p>
+      <p>Photo Gallery</p>
       <Image
         src={themedAsset("/assets/polaroid.svg", theme)}
         alt=""
