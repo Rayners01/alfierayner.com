@@ -1,14 +1,16 @@
 import Link from "next/link";
 import { ButtonLink } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { AuthLink } from "@/features/auth/auth-link";
 import { site } from "@/content/site";
+import { getSessionUser } from "@/lib/session";
 import { cn } from "@/lib/cn";
 
 const RULE = "border-frame/25";
 
 const GUTTER = "px-6 max-md:px-4";
 
-export function BlogShell({
+export async function BlogShell({
   children,
   actions,
   heading,
@@ -23,6 +25,8 @@ export function BlogShell({
   wide?: boolean;
   fill?: boolean;
 }) {
+  const user = await getSessionUser();
+
   return (
     <div
       className={cn(
@@ -90,6 +94,8 @@ export function BlogShell({
           >
             <span className="text-xs text-muted">
               &copy; {site.copyrightYear} {site.title}
+              {" · "}
+              <AuthLink signedIn={Boolean(user)} />
             </span>
             <ButtonLink
               href={backHref}

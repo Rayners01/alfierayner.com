@@ -2,10 +2,10 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
-import NextLink from "next/link";
 import { Button } from "@/components/ui/button";
 import { PHOTOS_PER_PAGE } from "@/content/photos";
 import { site } from "@/content/site";
+import { AuthLink } from "@/features/auth/auth-link";
 import { useSession } from "@/features/auth/use-session";
 import { lora } from "@/lib/fonts";
 import type { Photo } from "@/lib/photos.types";
@@ -71,7 +71,7 @@ type Props = {
 /** A paginated wall of polaroids, with a click-to-expand detail view. */
 export function PhotoLibrary({ onClose, interactive = true }: Props) {
   const { photos, loading, error, add, remove } = usePhotos();
-  const { user } = useSession();
+  const { user, refresh } = useSession();
 
   const [page, setPage] = useState(0);
   const [expandedAt, setExpandedAt] = useState<number | null>(null);
@@ -271,14 +271,8 @@ export function PhotoLibrary({ onClose, interactive = true }: Props) {
 
         <p className="text-xs text-ink/70">
           &copy; {site.copyrightYear} {site.title}
-          {!user && (
-            <>
-              {" · "}
-              <NextLink href="/login" className="underline hover:text-accent">
-                Sign in
-              </NextLink>
-            </>
-          )}
+          {" · "}
+          <AuthLink signedIn={Boolean(user)} onSignedOut={refresh} />
         </p>
       </footer>
     </div>
